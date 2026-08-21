@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%93%9C%3C/text%3E%3C/svg%3E">
+<title>圣书智慧谜语 · 闯关乐园</title>
+<style>
+:root{
+  --bg1:#131a3f; --bg2:#2a1b55; --bg3:#431a5e;
+  --card:#fffdf6; --card2:#fff8e7;
+  --ink:#3a2b5c; --ink2:#7a6a9c;
+  --gold:#ffc94d; --gold2:#ffb300;
+  --purple:#7c3aed; --purple2:#a855f7;
+  --pink:#ec4899; --green:#22c55e; --red:#ef4444; --blue:#3b82f6;
+  --line:#eadfc8;
+  --shadow:0 10px 30px rgba(10,6,40,.35);
+  --radius:22px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(160deg,var(--bg1) 0%,var(--bg2) 55%,var(--bg3) 100%);
+  min-height:100vh; overflow-x:hidden;
+}
+/* ---------- 星空背景 ---------- */
+#stars-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,.7), transparent),
+    radial-gradient(2px 2px at 65% 20%, rgba(255,255,255,.9), transparent),
+    radial-gradient(1px 1px at 80% 55%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.6px 1.6px at 12% 80%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1px 1px at 90% 85%, rgba(255,255,255,.65), transparent),
+    radial-gradient(1.2px 1.2px at 50% 45%, rgba(255,255,255,.8), transparent),
+    radial-gradient(1px 1px at 30% 10%, rgba(255,255,255,.6), transparent),
+    radial-gradient(1.4px 1.4px at 72% 68%, rgba(255,255,255,.75), transparent),
+    radial-gradient(1px 1px at 8% 45%, rgba(255,255,255,.6), transparent);
+  animation:twinkle 4s ease-in-out infinite alternate;
+}
+@keyframes twinkle{from{opacity:.55}to{opacity:1}}
+main{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:14px 16px 90px}
+
+/* ---------- 顶栏 ---------- */
+header{position:relative;z-index:5;display:flex;align-items:center;gap:12px;
+  max-width:1080px;margin:0 auto;padding:16px 18px 6px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-badge{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--gold),#ff8f00);font-size:26px;
+  box-shadow:0 6px 16px rgba(255,179,0,.45);animation:floaty 3.4s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+.logo h1{margin:0;font-size:22px;color:#fff;letter-spacing:1px;text-shadow:0 2px 10px rgba(0,0,0,.35)}
+.logo .sub{font-size:11px;color:#cdbfef;margin-top:2px;letter-spacing:2px}
+.header-right{margin-left:auto;display:flex;gap:8px}
+.icon-btn{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.1);color:#fff;font-size:19px;cursor:pointer;
+  display:grid;place-items:center;backdrop-filter:blur(6px);transition:.2s}
+.icon-btn:hover{background:rgba(255,255,255,.25);transform:scale(1.08)}
+.icon-btn.off{opacity:.55}
+
+/* ---------- 视图 ---------- */
+.view{display:none;animation:viewIn .45s ease}
+.view.active{display:block}
+@keyframes viewIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+/* ---------- 首页 ---------- */
+.page-title{text-align:center;color:#fff;margin:18px 0 6px}
+.page-title h2{margin:0;font-size:26px;letter-spacing:3px}
+.page-title p{margin:8px 0 0;color:#cdbfef;font-size:14px}
+.stats-row{display:flex;justify-content:center;gap:12px;margin:14px 0 20px;flex-wrap:wrap}
+.stat-pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  color:#fff;border-radius:999px;padding:8px 16px;font-size:13px;display:flex;gap:6px;align-items:center;
+  backdrop-filter:blur(6px)}
+.stat-pill b{color:var(--gold);font-size:16px}
+
+.books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.book-card{background:var(--card);border-radius:var(--radius);padding:16px 12px 14px;cursor:pointer;
+  box-shadow:var(--shadow);border:3px solid transparent;position:relative;overflow:hidden;transition:.25s;text-align:center}
+.book-card:hover{transform:translateY(-5px) rotate(-.6deg)}
+.book-card.available{border-color:var(--gold)}
+.book-card.locked{opacity:.72;filter:saturate(.55)}
+.book-card.locked::after{content:"🔒";position:absolute;top:10px;right:12px;font-size:18px}
+.book-icon{font-size:40px;line-height:1;display:block;margin-bottom:6px}
+.book-name{font-weight:800;font-size:15px;color:var(--ink)}
+.book-en{font-size:10px;color:var(--ink2);letter-spacing:1px;margin-top:2px}
+.book-meta{font-size:11px;color:var(--ink2);margin-top:6px}
+.progress-dots{display:flex;justify-content:center;gap:4px;margin-top:10px;flex-wrap:wrap}
+.pdot{width:9px;height:9px;border-radius:50%;background:#e8ddc8;transition:.3s}
+.pdot.on{background:var(--gold2);box-shadow:0 0 6px rgba(255,179,0,.8)}
+.book-card.available .go{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--purple),var(--pink));border-radius:999px;padding:7px 18px}
+.book-card.locked .go{display:inline-block;margin-top:10px;font-size:12px;color:var(--ink2);background:#eee3cf;border-radius:999px;padding:7px 12px}
+.legend{text-align:center;color:#a99cc9;font-size:12px;margin-top:22px}
+.legend .tag{display:inline-block;padding:5px 12px;border-radius:999px;margin:3px;background:rgba(255,255,255,.1)}
+
+/* ---------- 卷内闯关地图 ---------- */
+.book-head{display:flex;align-items:center;gap:14px;color:#fff;margin:8px 0 18px}
+.book-head .back{width:40px;height:40px;border-radius:12px;border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.1);color:#fff;font-size:18px;cursor:pointer}
+.book-head .bh-icon{font-size:38px}
+.book-head .bh-name{font-size:24px;font-weight:800;letter-spacing:2px}
+.book-head .bh-en{font-size:12px;color:#cdbfef}
+.book-head .bh-progress{margin-left:auto;text-align:right;font-size:12px;color:#cdbfef}
+.road{position:relative;display:flex;flex-direction:column;gap:14px}
+.road::before{content:"";position:absolute;left:34px;top:24px;bottom:24px;width:5px;
+  background:repeating-linear-gradient(180deg,var(--gold) 0 10px,transparent 10px 20px);opacity:.8;border-radius:4px}
+.stage{position:relative;display:flex;align-items:center;gap:16px;background:var(--card);
+  border-radius:var(--radius);padding:14px 14px 14px 0;box-shadow:var(--shadow);cursor:pointer;transition:.25s}
+.stage:hover{transform:translateX(6px)}
+.stage.locked{opacity:.6;filter:saturate(.5);cursor:not-allowed}
+.stage-num{flex:0 0 68px;height:68px;width:68px;margin-left:0;display:grid;place-items:center;
+  font-size:26px;font-weight:900;color:#fff;border-radius:18px;z-index:1;margin-left:10px;position:relative}
+.stage-num small{position:absolute;bottom:4px;font-size:9px;font-weight:600;opacity:.85}
+.stage-info{flex:1;min-width:0}
+.stage-info .t{font-weight:800;font-size:16px;color:var(--ink)}
+.stage-info .r{font-size:11px;color:var(--ink2);margin-top:3px}
+.stage-stars{display:flex;gap:3px;margin-top:6px}
+.stage-stars .st{font-size:17px;opacity:.25;filter:grayscale(1)}
+.stage-stars .st.on{opacity:1;filter:none;animation:popStar .4s ease}
+@keyframes popStar{0%{transform:scale(0) rotate(-30deg)}70%{transform:scale(1.4)}100%{transform:scale(1)}}
+.stage-go{flex:0 0 auto;font-size:13px;font-weight:800;color:#fff;border-radius:999px;padding:9px 16px;
+  background:linear-gradient(135deg,var(--purple),var(--pink));box-shadow:0 4px 12px rgba(124,58,237,.4)}
+.stage.locked .stage-go{background:#cfc4ae;color:#8a7d63}
+.stage.done .stage-go{background:linear-gradient(135deg,var(--green),#16a34a)}
+.road-end{text-align:center;color:#cdbfef;font-size:13px;margin-top:6px;padding:8px}
+
+/* ---------- 关卡介绍 ---------- */
+.intro-card{background:var(--card);border-radius:26px;box-shadow:var(--shadow);padding:18px;max-width:760px;margin:6px auto}
+.intro-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.intro-head .back{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:16px;cursor:pointer}
+.intro-head .t{font-weight:900;font-size:20px;color:var(--ink)}
+.intro-head .r{font-size:12px;color:var(--ink2)}
+.comic-wrap{position:relative;border-radius:18px;overflow:hidden;border:4px solid #f3e6c8;margin:12px 0;
+  background:linear-gradient(180deg,#bfe3ff,#e8f7ff)}
+.comic-wrap svg{display:block;width:100%;height:auto}
+.comic-caption{position:absolute;left:10px;right:10px;bottom:10px;text-align:center;color:#fff;
+  font-size:14px;font-weight:800;background:rgba(30,20,60,.55);border-radius:12px;padding:7px 10px;
+  backdrop-filter:blur(4px);letter-spacing:1px}
+.intro-desc{font-size:15px;line-height:1.8;color:var(--ink);background:var(--card2);border-radius:14px;padding:14px 16px;border:1px dashed var(--line)}
+.intro-meta{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.intro-meta .chip{flex:1;min-width:120px;background:#f4ecdb;border-radius:14px;padding:10px;text-align:center}
+.intro-meta .chip b{display:block;font-size:20px;color:var(--purple)}
+.intro-meta .chip span{font-size:11px;color:var(--ink2)}
+.btn-row{display:flex;gap:12px;margin-top:18px}
+.btn{flex:1;border:none;cursor:pointer;font-family:inherit;font-size:16px;font-weight:800;color:#fff;
+  border-radius:999px;padding:15px 10px;letter-spacing:2px;transition:.2s;box-shadow:0 6px 18px rgba(124,58,237,.35)}
+.btn:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:linear-gradient(135deg,var(--purple),var(--pink))}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#ff8f00);color:#5a3c00}
+.btn-green{background:linear-gradient(135deg,#22c55e,#16a34a)}
+.btn-ghost{background:#eee3cf;color:var(--ink);box-shadow:none}
+.btn-small{font-size:13px;padding:9px 18px;letter-spacing:1px}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ---------- 答题 ---------- */
+.quiz-head{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.quiz-head .back{width:38px;height:38px;border-radius:12px;border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.1);color:#fff;font-size:16px;cursor:pointer}
+.quiz-progress{flex:1}
+.qp-bar{height:10px;border-radius:999px;background:rgba(255,255,255,.2);overflow:hidden}
+.qp-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--pink));
+  transition:width .4s ease}
+.qp-text{color:#cdbfef;font-size:11px;margin-top:5px;display:flex;justify-content:space-between}
+.score-pill{color:var(--gold);font-weight:800;font-size:14px;white-space:nowrap}
+.quiz-card{background:var(--card);border-radius:26px;box-shadow:var(--shadow);padding:20px 18px;max-width:760px;margin:0 auto}
+.q-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.q-badge{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;border-radius:12px;
+  padding:6px 12px;font-size:13px;font-weight:800;white-space:nowrap}
+.q-listen{margin-left:auto}
+.listen-btn{width:40px;height:40px;border-radius:50%;border:2px solid #d8c9a8;background:#fff;color:var(--purple);
+  font-size:17px;cursor:pointer;transition:.2s}
+.listen-btn:hover{background:var(--purple);color:#fff;transform:scale(1.1)}
+.listen-btn.speaking{background:var(--purple);color:#fff;animation:pulseRing 1s infinite}
+@keyframes pulseRing{0%{box-shadow:0 0 0 0 rgba(124,58,237,.5)}70%{box-shadow:0 0 0 12px rgba(124,58,237,0)}100%{box-shadow:0 0 0 0 rgba(124,58,237,0)}}
+.q-text{font-size:19px;font-weight:800;line-height:1.7;color:var(--ink);margin:4px 0 16px}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;gap:12px;border:2px solid var(--line);background:#fff;border-radius:16px;
+  padding:13px 14px;cursor:pointer;font-size:15px;line-height:1.5;transition:.18s;color:var(--ink);text-align:left;font-family:inherit}
+.opt:hover{border-color:var(--purple);transform:translateX(4px)}
+.opt .alpha{flex:0 0 32px;height:32px;border-radius:50%;background:#f1e7d2;color:var(--ink2);font-weight:900;
+  display:grid;place-items:center;font-size:14px}
+.opt.correct{border-color:var(--green);background:#e9f9ee;animation:optPop .35s ease}
+.opt.correct .alpha{background:var(--green);color:#fff}
+.opt.wrong{border-color:var(--red);background:#fdecec;animation:shake .4s ease}
+.opt.wrong .alpha{background:var(--red);color:#fff}
+.opt.dim{opacity:.45}
+@keyframes optPop{0%{transform:scale(.94)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.feedback{margin-top:14px;border-radius:16px;padding:14px;font-size:14px;line-height:1.7;display:none}
+.feedback.show{display:block;animation:viewIn .4s ease}
+.feedback.ok{background:#e9f9ee;border:2px solid var(--green)}
+.feedback.no{background:#fdecec;border:2px solid var(--red)}
+.fb-title{font-weight:900;font-size:16px;margin-bottom:6px}
+.fb-verse{background:#fff;border-radius:12px;padding:10px 12px;margin:8px 0;border-left:4px solid var(--gold);
+  font-size:14px;line-height:1.8;color:#5a4a30}
+.fb-verse .ref{color:var(--purple);font-weight:800}
+.fb-explain{color:#5b6b52;font-size:13px}
+.fb-audio{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.next-row{margin-top:16px;display:flex;gap:10px}
+
+/* ---------- 结果 ---------- */
+.result-card{background:var(--card);border-radius:26px;box-shadow:var(--shadow);padding:26px 20px;max-width:640px;margin:10px auto;text-align:center}
+.result-title{font-size:26px;font-weight:900;margin:8px 0 4px}
+.result-sub{color:var(--ink2);font-size:14px}
+.result-stars{display:flex;justify-content:center;gap:14px;margin:18px 0}
+.result-stars .st{font-size:52px;opacity:.2;filter:grayscale(1);transition:.4s}
+.result-stars .st.on{opacity:1;filter:none;animation:starDrop .6s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes starDrop{0%{transform:scale(0) rotate(-40deg)}70%{transform:scale(1.35)}100%{transform:scale(1)}}
+.score-box{display:flex;justify-content:center;gap:18px;margin:16px 0}
+.score-item{background:#f6efe0;border-radius:14px;padding:12px 18px}
+.score-item b{display:block;font-size:24px;color:var(--purple)}
+.score-item span{font-size:11px;color:var(--ink2)}
+.result-msg{font-size:15px;line-height:1.8;color:#5b6b52;background:var(--card2);border-radius:14px;padding:12px;border:1px dashed var(--line)}
+.mascot-wrap{display:flex;justify-content:center;margin:6px 0}
+
+/* ---------- 漫画动画 ---------- */
+@keyframes cloudMove{0%{transform:translateX(0)}100%{transform:translateX(26px)}}
+@keyframes birdFly{0%{transform:translate(0,0)}25%{transform:translate(12px,-9px)}50%{transform:translate(24px,0)}75%{transform:translate(12px,9px)}100%{transform:translate(0,0)}}
+@keyframes waveMove{0%{transform:translateX(0)}100%{transform:translateX(-28px)}}
+@keyframes sparkle{0%,100%{opacity:.15;transform:scale(.6)}50%{opacity:1;transform:scale(1.15)}}
+@keyframes spinSlow{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes rayPulse{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes flameFlicker{0%,100%{transform:scaleY(1);opacity:.95}50%{transform:scaleY(1.25);opacity:1}}
+@keyframes snakeSlide{0%{transform:translateX(-4px)}50%{transform:translateX(4px)}100%{transform:translateX(-4px)}}
+@keyframes camelWalk{0%,100%{transform:translateX(0)}50%{transform:translateX(8px)}}
+@keyframes ladderGlow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes thronePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+@keyframes rainbowWave{0%,100%{opacity:.85}50%{opacity:1}}
+.cl-cloud{animation:cloudMove 6s ease-in-out infinite alternate}
+.cl-cloud2{animation:cloudMove 8s ease-in-out infinite alternate-reverse}
+.cl-bird{animation:birdFly 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.cl-wave{animation:waveMove 7s linear infinite}
+.cl-sparkle{animation:sparkle 2.2s ease-in-out infinite}
+.cl-sun{animation:spinSlow 24s linear infinite;transform-box:fill-box;transform-origin:center}
+.cl-ray{animation:rayPulse 2.6s ease-in-out infinite}
+.cl-flame{animation:flameFlicker .5s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom}
+.cl-snake{animation:snakeSlide 3.2s ease-in-out infinite}
+.cl-camel{animation:camelWalk 5s ease-in-out infinite}
+.cl-ladder{animation:ladderGlow 2.4s ease-in-out infinite}
+.cl-throne{animation:thronePulse 3s ease-in-out infinite}
+.cl-rainbow{animation:rainbowWave 3s ease-in-out infinite}
+
+/* ---------- 吉祥物 ---------- */
+.mascot{width:92px;height:92px}
+.mascot .eye{animation:blink 4.5s infinite}
+.mascot .wing{transition:.3s}
+.mascot.happy .wing{transform:rotate(-14deg);transform-box:fill-box;transform-origin:right center}
+.mascot.happy{animation:floaty 1.6s ease-in-out infinite}
+.mascot.sad .mouth{transform:translateY(3px)}
+.mascot .mouth{transition:.2s}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+
+
+
+
+
+/* ---------- 题目类型标签 ---------- */
+.type-badge{border-radius:10px;padding:5px 11px;font-size:13px;font-weight:800;white-space:nowrap}
+.type-badge.riddle{background:#fff3d6;color:#b45309;border:1.5px solid #f59e0b}
+.type-badge.question{background:#e8f0fe;color:#1d4ed8;border:1.5px solid #60a5fa}
+@media (max-width:560px){ .type-badge{font-size:12px;padding:4px 9px} }
+
+/* ---------- 跳过题目 ---------- */
+.skip-btn{background:#f6f0e0;color:var(--ink2);border:2px dashed #cfc4ae;box-shadow:none;font-size:15px}
+.skip-btn:hover{background:#efe5cf;border-color:var(--gold2)}
+.qnav-btn.skip{border-style:dashed;background:#f6f0e0;color:var(--ink2)}
+.result-skip{text-align:center;font-size:14px;color:var(--ink2);margin:-4px 0 12px}
+
+/* ---------- 跳选题目 ---------- */
+.q-nav-wrap{display:none;margin-top:12px;background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:12px;max-width:760px;margin-left:auto;margin-right:auto}
+.q-nav-wrap.show{display:block;animation:viewIn .3s ease}
+.q-nav-head{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:800;font-size:14px;color:var(--ink);margin-bottom:10px}
+.q-nav-close{border:none;background:#eee3cf;border-radius:10px;width:32px;height:32px;cursor:pointer;font-size:14px;flex:0 0 auto}
+.q-nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:8px;max-height:280px;overflow:auto;padding:2px}
+.qnav-btn{border:2px solid var(--line);background:#fff;border-radius:10px;height:40px;font-size:14px;font-weight:800;color:var(--ink2);cursor:pointer;font-family:inherit;transition:.15s}
+.qnav-btn:hover{transform:scale(1.08);border-color:var(--purple)}
+.qnav-btn.cur{border-color:var(--purple);color:var(--purple);background:#f3edff;box-shadow:0 0 0 2px rgba(124,58,237,.2)}
+.qnav-btn.ok{background:var(--green);border-color:var(--green);color:#fff}
+.qnav-btn.no{background:var(--red);border-color:var(--red);color:#fff}
+@media (max-width:560px){ .q-nav-grid{grid-template-columns:repeat(8,1fr)} }
+
+
+
+/* ---------- 书卷概论 ---------- */
+.intro-btn{flex:0 0 auto;background:linear-gradient(135deg,var(--gold),#ff8f00);border:none;color:#5a3c00;border-radius:999px;padding:8px 14px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;transition:.2s}
+.intro-btn:hover{transform:translateY(-2px);filter:brightness(1.06)}
+.intro-modal{max-width:520px}
+#bi-detail h3{margin:0 0 6px;font-size:22px;text-align:center;color:var(--ink)}
+#bi-detail h3 .en{font-size:12px;color:var(--ink2);font-weight:600;letter-spacing:1px}
+.bi-meta{text-align:center;font-size:13px;color:var(--ink2);margin-bottom:8px}
+.bi-tag{text-align:center;font-size:15px;font-weight:800;color:var(--purple);background:#f3edff;border-radius:999px;padding:5px 14px;display:inline-block;width:100%;box-sizing:border-box}
+.bi-theme{font-size:14px;color:#b45309;background:#fff3d6;border-radius:10px;padding:8px 12px;margin:10px 0}
+.bi-summary{font-size:15px;line-height:1.9;color:var(--ink);background:var(--card2);border-radius:12px;padding:10px 12px}
+.bi-verse{background:#fff8e7;border-left:4px solid var(--gold);border-radius:10px;padding:8px 12px;font-size:14px;color:#5a4a30;margin-top:10px;line-height:1.7}
+
+/* ---------- 书卷概论介绍 ---------- */
+function openBookIntro(){
+  const info = INTROS[bookId];
+  if(!info) return;
+  const b = BOOKS.find(x => x.id === bookId) || {icon:"📖"};
+  document.getElementById("bi-detail").innerHTML =
+    "<h3>" + b.icon + " " + info.name + " <span class=\"en\">" + info.en + "</span></h3>" +
+    "<div class=\"bi-meta\">📂 " + info.category + " · " + info.chapters + "章 · ✍️ 作者：" + info.author + "</div>" +
+    "<div class=\"bi-tag\">「" + info.tagline + "」</div>" +
+    "<div class=\"bi-theme\">主题：" + info.theme + "</div>" +
+    "<div class=\"bi-summary\">" + (info.long || info.summary) + "</div>" +
+    (info.verse ? "<div class=\"bi-verse\">📖 " + info.verseRef + "<br>「" + info.verse + "」</div>" : "");
+  document.getElementById("intro-modal").classList.add("show");
+}
+function closeBookIntro(){ document.getElementById("intro-modal").classList.remove("show"); }
+function speakBookIntro(){
+  const info = INTROS[bookId];
+  if(!info) return;
+  speak("《" + info.name + "》概论。共" + info.chapters + "章，传统上作者是" + info.author + "。主题：" + info.theme + "。" + (info.long || info.summary) + (info.verse ? "本卷金句：" + info.verse + "，" + info.verseRef + "。" : ""));
+}
+
+/* ---------- 圣书故事手工 ---------- */
+.craft-banner{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#ff9a3c,#ff6b6b);border-radius:20px;padding:14px 16px;margin:14px 0 18px;cursor:pointer;color:#fff;box-shadow:0 8px 20px rgba(255,107,107,.35);transition:.2s}
+.craft-banner:hover{transform:translateY(-3px)}
+.cb-banner-icon{font-size:34px}
+.cb-banner-text b{font-size:17px;display:block}
+.cb-banner-text span{font-size:12px;opacity:.95;margin-top:2px;display:block}
+.cb-banner-btn{flex:0 0 auto;background:rgba(255,255,255,.25);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:800}
+.craft-group-title{color:#fff;font-size:16px;font-weight:800;margin:14px 4px 8px;letter-spacing:2px}
+.craft-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.craft-book{background:var(--card);border-radius:18px;padding:14px 10px;text-align:center;cursor:pointer;box-shadow:var(--shadow);transition:.2s}
+.craft-book:hover{transform:translateY(-4px)}
+.craft-book .cb-icon{font-size:32px;display:block}
+.craft-book .cb-name{font-weight:800;font-size:14px;color:var(--ink);display:block;margin-top:6px}
+.craft-book .cb-count{font-size:11px;color:var(--purple);font-weight:700;background:#f3edff;border-radius:999px;padding:2px 10px;display:inline-block;margin-top:6px}
+.craft-book-title{color:#fff;font-size:18px;font-weight:900;margin-bottom:12px}
+.craft-card{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:12px 14px;box-shadow:var(--shadow);cursor:pointer;margin-bottom:10px;transition:.2s}
+.craft-card:hover{transform:translateX(5px)}
+.craft-card .cc-icon{font-size:30px;flex:0 0 auto}
+.craft-card .cc-body{flex:1;min-width:0}
+.craft-card .cc-title{font-weight:800;font-size:15px;color:var(--ink)}
+.craft-card .cc-ref{font-size:11px;color:var(--ink2);margin-top:3px}
+.craft-card .cc-craft{font-size:12px;color:#b45309;background:#fff3d6;border-radius:999px;padding:3px 10px;display:inline-block;margin-top:6px}
+.craft-card .cc-go{flex:0 0 auto;color:#c9bda4;font-size:16px}
+.craft-modal{max-width:520px}
+#craft-detail h3{margin:0 0 8px;font-size:22px;text-align:center}
+.cd-ref{text-align:center;font-size:13px;color:var(--ink2);margin-bottom:8px}
+.cd-verse{background:#fff8e7;border-left:4px solid var(--gold);border-radius:10px;padding:8px 12px;font-size:14px;color:#5a4a30;margin-bottom:12px;line-height:1.7}
+.cd-label{font-weight:800;font-size:15px;color:var(--purple);margin:12px 0 6px}
+.cd-story{font-size:15px;line-height:1.9;color:var(--ink);background:var(--card2);border-radius:12px;padding:10px 12px}
+.cd-materials{font-size:14px;line-height:1.8}
+.cd-materials .chip2{display:inline-block;background:#eef4ff;color:#1d4ed8;border-radius:999px;padding:3px 10px;font-size:12px;margin:3px 4px 0 0}
+.cd-demo{background:#fff;border-radius:14px;border:3px solid #f3e6c8;padding:6px;margin-bottom:10px}
+.cd-demo svg{width:100%;height:auto;display:block;border-radius:10px}
+.cd-demo-none{text-align:center;padding:24px 0;font-size:34px}
+.cd-tips{font-size:14px;line-height:1.9;color:#5b6b52;background:#eef7ea;border-radius:12px;padding:10px 12px 10px 28px;margin:0}
+.cd-reference{font-size:14px;line-height:1.8;color:var(--ink);background:#f6f0e0;border-radius:12px;padding:10px 12px}
+.cd-steps{font-size:14px;line-height:1.9}
+.cd-steps ol{margin:6px 0 0;padding-left:20px}
+
+/* ---------- 我的记录 ---------- */
+.rec-link{cursor:pointer;border:1px solid var(--gold);transition:.2s}
+.rec-link:hover{background:rgba(255,255,255,.22);transform:translateY(-2px)}
+.record-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 16px}
+.rec-stat{background:var(--card);border-radius:18px;padding:14px 6px;text-align:center;box-shadow:var(--shadow)}
+.rec-stat b{display:block;font-size:24px;color:var(--purple)}
+.rec-stat span{font-size:12px;color:var(--ink2)}
+.rec-tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.rec-tab{border:2px solid var(--line);background:#fff;color:var(--ink2);border-radius:999px;padding:9px 16px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:.2s}
+.rec-tab.on{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;border-color:transparent}
+.rec-badge{display:inline-block;min-width:20px;border-radius:999px;background:var(--red);color:#fff;font-size:11px;padding:2px 6px;margin-left:6px}
+.rec-tab.on .rec-badge{background:rgba(255,255,255,.85);color:var(--red)}
+.rec-panel{display:flex;flex-direction:column;gap:12px}
+.rec-empty{background:var(--card);border-radius:20px;padding:34px 20px;text-align:center;color:var(--ink2);font-size:16px;box-shadow:var(--shadow)}
+.rec-empty .big{font-size:44px;display:block;margin-bottom:10px}
+.rec-timeline{position:relative;padding-left:20px}
+.rec-timeline::before{content:"";position:absolute;left:6px;top:8px;bottom:8px;width:3px;border-radius:3px;background:repeating-linear-gradient(180deg,var(--gold) 0 8px,transparent 8px 16px)}
+.rec-item{position:relative;background:var(--card);border-radius:16px;padding:12px 14px;box-shadow:var(--shadow);margin-bottom:10px}
+.rec-item::before{content:"";position:absolute;left:-17px;top:16px;width:11px;height:11px;border-radius:50%;background:var(--gold);border:2px solid #fff}
+.rec-item .ic{font-size:20px;margin-right:8px}
+.rec-item .txt{font-size:15px;line-height:1.6;color:var(--ink)}
+.rec-item .tm{font-size:12px;color:var(--ink2);margin-top:4px}
+.rec-wrong-card{background:var(--card);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow);border-left:5px solid var(--red)}
+.rec-wrong-card .wq{font-size:16px;font-weight:800;color:var(--ink);line-height:1.6}
+.rec-wrong-card .wa{font-size:14px;color:#2f9e44;font-weight:700;margin-top:8px;background:#e9f9ee;border-radius:10px;padding:8px 10px;line-height:1.6}
+.rec-wrong-card .wv{font-size:13px;color:#5a4a30;background:#fff8e7;border-radius:10px;padding:8px 10px;margin-top:8px;line-height:1.7;border-left:3px solid var(--gold)}
+.rec-wrong-card .we{font-size:13px;color:#5b6b52;margin-top:6px;line-height:1.6}
+.rec-wrong-card .wm{font-size:11px;color:var(--ink2);margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rec-wrong-card .wm .tag{background:#fdecec;color:var(--red);border-radius:999px;padding:2px 9px;font-weight:700}
+.rec-pass-card{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:14px 16px;box-shadow:var(--shadow)}
+.rec-pass-card .pc-icon{font-size:30px}
+.rec-pass-card .pc-title{font-size:16px;font-weight:800;color:var(--ink)}
+.rec-pass-card .pc-meta{font-size:12px;color:var(--ink2);margin-top:3px}
+.rec-pass-card .pc-stars{margin-left:auto;text-align:right}
+.rec-pass-card .pc-stars .st{font-size:18px;opacity:.25;filter:grayscale(1)}
+.rec-pass-card .pc-stars .st.on{opacity:1;filter:none}
+.rec-pass-card .pc-best{font-size:12px;color:var(--purple);font-weight:800}
+@media (max-width:560px){
+  .record-stats{grid-template-columns:repeat(2,1fr)}
+  .rec-stat b{font-size:22px}
+  .rec-tab{font-size:13px;padding:8px 12px}
+}
+
+/* ---------- 弹窗 ---------- */
+.modal-mask{position:fixed;inset:0;background:rgba(10,8,30,.6);z-index:50;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-mask.show{display:flex}
+.modal{background:var(--card);border-radius:24px;max-width:420px;width:100%;padding:22px;box-shadow:var(--shadow);max-height:86vh;overflow:auto}
+.modal h3{margin:0 0 16px;font-size:20px;text-align:center}
+.set-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0e6d2;gap:10px}
+.set-row:last-child{border-bottom:none}
+.set-row label{font-size:14px;font-weight:600}
+.rate-ctl{display:flex;align-items:center;gap:8px}
+.rate-ctl button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:#fff;font-size:16px;cursor:pointer}
+.rate-ctl b{min-width:52px;text-align:center;font-size:14px}
+.switch{position:relative;width:50px;height:28px;flex:0 0 auto;cursor:pointer}
+.switch input{display:none}
+.switch .track{position:absolute;inset:0;background:#d8ccb4;border-radius:999px;transition:.25s}
+.switch .track::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:.25s;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.switch input:checked + .track{background:var(--green)}
+.switch input:checked + .track::after{transform:translateX(22px)}
+.voice-list{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.voice-chip{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer;background:#fff}
+.voice-chip.on{background:var(--purple);color:#fff;border-color:var(--purple)}
+
+/* ---------- 彩带 ---------- */
+#confetti{position:fixed;inset:0;z-index:60;pointer-events:none}
+
+/* ---------- toast ---------- */
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:70;
+  background:rgba(30,20,60,.92);color:#fff;padding:11px 22px;border-radius:999px;font-size:14px;font-weight:600;
+  opacity:0;transition:.3s;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.35);white-space:nowrap}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.footer{text-align:center;color:#8f83b8;font-size:12px;margin-top:30px;line-height:1.8}
+
+
+/* ---------- 字号加大（手机/电脑通用，移动端在下方微调） ---------- */
+.logo h1{font-size:26px}
+.logo .sub{font-size:13px}
+.icon-btn{font-size:21px}
+.page-title h2{font-size:30px}
+.page-title p{font-size:16px}
+.stat-pill{font-size:15px;padding:9px 18px}
+.stat-pill b{font-size:18px}
+.book-icon{font-size:42px}
+.book-name{font-size:17px}
+.book-en{font-size:12px}
+.book-meta{font-size:13px}
+.book-card.available .go{font-size:14px}
+.book-card.locked .go{font-size:14px}
+.legend{font-size:14px}
+.book-head .bh-name{font-size:28px}
+.book-head .bh-en{font-size:14px}
+.book-head .bh-progress{font-size:14px}
+.stage-num{font-size:28px}
+.stage-num small{font-size:10px}
+.stage-info .t{font-size:18px}
+.stage-info .r{font-size:13px}
+.stage-stars .st{font-size:19px}
+.stage-go{font-size:15px;padding:10px 18px}
+.road-end{font-size:15px}
+.intro-head .t{font-size:23px}
+.intro-head .r{font-size:14px}
+.comic-caption{font-size:16px;padding:9px 12px}
+.intro-desc{font-size:17px;line-height:1.9}
+.intro-meta .chip b{font-size:23px}
+.intro-meta .chip span{font-size:13px}
+.btn{font-size:17px;padding:16px 12px}
+.btn-small{font-size:14px;padding:10px 18px}
+.qp-text{font-size:13px}
+.score-pill{font-size:16px}
+.q-badge{font-size:14px;padding:7px 13px}
+.listen-btn{width:44px;height:44px;font-size:19px}
+.q-text{font-size:24px;line-height:1.75;margin:6px 0 18px}
+.opt{font-size:18px;padding:15px 16px;gap:13px;line-height:1.6}
+.opt .alpha{flex-basis:36px;height:36px;font-size:16px}
+.feedback{font-size:16px;line-height:1.8;padding:16px}
+.fb-title{font-size:19px}
+.fb-verse{font-size:16px;line-height:1.9}
+.fb-explain{font-size:15px}
+.result-title{font-size:30px}
+.result-sub{font-size:16px}
+.result-stars .st{font-size:58px}
+.score-item b{font-size:28px}
+.score-item span{font-size:13px}
+.result-msg{font-size:17px;line-height:1.9}
+.modal h3{font-size:23px}
+.set-row label{font-size:16px}
+.rate-ctl b{font-size:16px}
+.voice-chip{font-size:14px;padding:7px 13px}
+#toast{font-size:16px}
+.footer{font-size:14px}
+@media (min-width:1100px){
+  .q-text{font-size:26px}
+  .opt{font-size:19px}
+  .intro-desc{font-size:18px}
+}
+
+@media (max-width:560px){
+  .logo h1{font-size:23px}
+  .books-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .book-card{padding:14px 10px 12px}
+  .book-icon{font-size:36px}
+  .q-text{font-size:21px}
+  .opt{font-size:17px}
+  .btn{font-size:16px}
+  .stage-num{flex-basis:62px;width:62px;height:62px;font-size:24px;margin-left:8px}
+  .road::before{left:30px}
+  .book-name{font-size:15px}
+}
+</style>
+</head>
+<body>
+<div id="stars-bg"></div>
+
+<header>
+  <div class="logo" onclick="goHome()" style="cursor:pointer">
+    <div class="logo-badge">🕮</div>
+    <div>
+      <h1>圣书智慧谜语 · 闯关乐园</h1>
+      <div class="sub">BIBLE RIDDLE ADVENTURE · 66卷 每卷650题</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <button class="icon-btn" id="btn-sound" title="音效开关" onclick="toggleSound()">🔊</button>
+    <button class="icon-btn" title="设置" onclick="openSettings()">⚙️</button>
+  </div>
+</header>
+
+<main>
+  <!-- 首页：66卷路线图 -->
+  <section class="view" id="view-home">
+    <div class="page-title">
+      <h2>📜 圣书书卷闯关之路</h2>
+      <p>一卷一卷来，猜圣书智慧谜语，收集星星，点亮全本圣书！</p>
+    </div>
+    <div class="stats-row">
+      <div class="stat-pill">⭐ 已得星星 <b id="stat-stars">0</b></div>
+      <div class="stat-pill">📖 已通关卷 <b id="stat-books">0</b>/66</div>
+      <div class="stat-pill">🧩 已过关卡 <b id="stat-stages">0</b></div>
+      <div class="stat-pill rec-link" onclick="goRecord()" title="查看个人操作记录">📋 我的记录</div>
+    </div>
+    <div class="craft-banner" onclick="goCrafts()" title="圣书故事手工（适合儿童）">
+      <div class="cb-banner-icon">🎨</div>
+      <div class="cb-banner-text">
+        <b>圣书故事手工（适合儿童）</b>
+        <span>66卷 · 204个故事手工：听圣书故事，动手做一做，边玩边学真理</span>
+      </div>
+      <div class="cb-banner-btn">进入 →</div>
+    </div>
+    <div class="books-grid" id="books-grid"></div>
+    <div class="legend">
+      <span class="tag">🟢 66卷全部开放</span>
+      <span class="tag">✨ 每卷10关 · 每关5谜语+10问题 · 共约4万题</span>
+    </div>
+  </section>
+
+  <!-- 卷内闯关地图 -->
+  <section class="view" id="view-book">
+    <div class="book-head">
+      <button class="back" onclick="goHome()">←</button>
+      <div class="bh-icon" id="bh-icon">🌱</div>
+      <div>
+        <div class="bh-name" id="bh-name">创世记</div>
+        <div class="bh-en" id="bh-en">Genesis</div>
+      </div>
+      <div class="bh-progress" id="bh-progress"></div>
+      <button class="intro-btn" onclick="openBookIntro()" title="本卷概论介绍">📖 概论</button>
+    </div>
+    <div class="road" id="road"></div>
+    <div class="road-end" id="road-end"></div>
+  </section>
+
+  <!-- 关卡介绍 -->
+  <section class="view" id="view-intro">
+    <div class="intro-card">
+      <div class="intro-head">
+        <button class="back" onclick="goBook()">←</button>
+        <div>
+          <div class="t" id="intro-title">创造天地</div>
+          <div class="r" id="intro-range">创世记 1–2章</div>
+        </div>
+      </div>
+      <div class="comic-wrap" id="intro-comic"></div>
+      <div class="intro-desc" id="intro-desc"></div>
+      <div class="intro-meta">
+        <div class="chip"><b id="intro-qnum">65</b><span>题库总题</span></div>
+        <div class="chip"><b id="intro-per">5+10</b><span>谜语+问题</span></div>
+        <div class="chip"><b id="intro-pass">9</b><span>答对过关</span></div>
+        <div class="chip"><b>⭐3</b><span>最高可得</span></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="startQuiz()">🚀 开始闯关</button>
+        <button class="btn btn-ghost btn-small" style="flex:0 0 auto" onclick="speakIntro()">🔊 听介绍</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="view" id="view-quiz">
+    <div class="quiz-head">
+      <button class="back" onclick="confirmExit()">✕</button>
+      <div class="quiz-progress">
+        <div class="qp-bar"><div class="qp-fill" id="qp-fill"></div></div>
+        <div class="qp-text"><span id="qp-label">第 1 / 20 题</span><span class="score-pill" id="qp-score">⭐ 0</span></div>
+      </div>
+      <button class="back" id="btn-qnav" onclick="toggleQNav()" title="跳选题目">🧭</button>
+    </div>
+    <div class="quiz-card">
+      <div class="q-top">
+        <span class="q-badge" id="q-passage">第1关 · 创造天地</span>
+        <span class="type-badge" id="q-type"></span>
+        <button class="listen-btn" id="btn-listen-q" title="朗读题目" onclick="speakQuestion()">🔊</button>
+      </div>
+      <div class="q-text" id="q-text"></div>
+      <div class="opts" id="opts"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="next-row" id="next-row"></div>
+    </div>
+    <div class="q-nav-wrap" id="q-nav-wrap">
+      <div class="q-nav-head">🧭 跳选题目（绿=答对 红=答错 点数字直接跳）<button class="q-nav-close" onclick="toggleQNav(false)">✕</button></div>
+      <div class="q-nav-grid" id="q-nav-grid"></div>
+    </div>
+  </section>
+
+  <!-- 结果 -->
+  <section class="view" id="view-result">
+    <div class="result-card">
+      <div class="mascot-wrap"><svg class="mascot" id="mascot-result" viewBox="0 0 120 120"></svg></div>
+      <div class="result-title" id="result-title">🎉 过关啦！</div>
+      <div class="result-sub" id="result-sub">创世记 · 第1关 · 创造天地</div>
+      <div class="result-stars" id="result-stars">
+        <span class="st">⭐</span><span class="st">⭐</span><span class="st">⭐</span>
+      </div>
+      <div class="score-box">
+        <div class="score-item"><b id="res-score">0</b><span>答对</span></div>
+        <div class="score-item"><b id="res-total">20</b><span>共几题</span></div>
+        <div class="score-item"><b id="res-best">0</b><span>历史最佳</span></div>
+      </div>
+      <div class="result-skip" id="res-skip"></div>
+      <div class="result-msg" id="result-msg"></div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btn-retry" onclick="retryQuiz()">🔄 再玩一次</button>
+        <button class="btn btn-primary" id="btn-next-stage" onclick="nextStage()">下一关 ➡️</button>
+      </div>
+      <div style="margin-top:10px">
+        <button class="btn btn-ghost btn-small" style="width:100%" onclick="goBook()">🗺️ 返回关卡地图</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="footer">经文引自《和合本》· 内容离线可用 · 数据保存在本机浏览器</div>
+
+<!-- 个人操作记录 -->
+  <section class="view" id="view-record">
+    <div class="book-head">
+      <button class="back" onclick="goHome()">←</button>
+      <div>
+        <div class="bh-name">📋 我的记录</div>
+        <div class="bh-en">个人操作记录 · 学习足迹</div>
+      </div>
+      <div class="bh-progress" id="rec-updated"></div>
+    </div>
+    <div class="record-stats">
+      <div class="rec-stat"><b id="rec-answered">0</b><span>累计答题</span></div>
+      <div class="rec-stat"><b id="rec-rate">0%</b><span>正确率</span></div>
+      <div class="rec-stat"><b id="rec-stars">0</b><span>已得星星</span></div>
+      <div class="rec-stat"><b id="rec-passed">0</b><span>通关关卡</span></div>
+    </div>
+    <div class="rec-tabs">
+      <button class="rec-tab on" data-tab="log" onclick="switchRecTab(event)">🕒 最近记录</button>
+      <button class="rec-tab" data-tab="wrong" onclick="switchRecTab(event)">❌ 错题本<b class="rec-badge" id="wrong-count">0</b></button>
+      <button class="rec-tab" data-tab="pass" onclick="switchRecTab(event)">🏅 通关记录</button>
+    </div>
+    <div class="rec-panel" id="rec-log"></div>
+    <div class="rec-panel" id="rec-wrong" style="display:none"></div>
+    <div class="rec-panel" id="rec-pass" style="display:none"></div>
+  </section>
+
+  <!-- 圣书故事手工 -->
+  <section class="view" id="view-crafts">
+    <div class="book-head">
+      <button class="back" onclick="goHome()">←</button>
+      <div>
+        <div class="bh-name">🎨 圣书故事手工</div>
+        <div class="bh-en">适合儿童 · 听故事 · 做手工</div>
+      </div>
+      <div class="bh-progress" id="craft-count"></div>
+    </div>
+    <div id="craft-books"></div>
+    <div id="craft-list" style="display:none">
+      <button class="btn btn-ghost btn-small" style="margin-bottom:12px" onclick="showCraftBooks()">← 返回全部书卷</button>
+      <div id="craft-list-inner"></div>
+    </div>
+  </section>
+
+  <!-- 设置弹窗 -->
+<div class="modal-mask" id="modal-settings" onclick="if(event.target===this)closeSettings()">
+  <div class="modal">
+    <h3>⚙️ 设置</h3>
+    <div class="set-row">
+      <label>🔊 音效</label>
+      <label class="switch"><input type="checkbox" id="set-sfx" onchange="saveSettings()"><span class="track"></span></label>
+    </div>
+    <div class="set-row">
+      <label>🗣️ 朗读（题目/经文/答题反馈）</label>
+      <label class="switch"><input type="checkbox" id="set-tts" onchange="saveSettings()"><span class="track"></span></label>
+    </div>
+    <div class="set-row">
+      <label>🐢 语速</label>
+      <div class="rate-ctl">
+        <button onclick="adjRate(-0.1)">－</button><b id="rate-val">1.0x</b><button onclick="adjRate(0.1)">＋</button>
+      </div>
+    </div>
+    <div class="set-row" style="flex-direction:column;align-items:stretch">
+      <label>🎙️ 朗读声音</label>
+      <div class="voice-list" id="voice-list"></div>
+    </div>
+    <div class="set-row">
+      <label>🧹 清除进度</label>
+      <button class="btn btn-ghost btn-small" style="flex:0 0 auto" onclick="clearProgress()">清除</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="closeSettings()">完成</button>
+    </div>
+  </div>
+</div>
+
+<!-- 书卷概论弹窗 -->
+<div class="modal-mask" id="intro-modal" onclick="if(event.target===this)closeBookIntro()">
+  <div class="modal intro-modal">
+    <div id="bi-detail"></div>
+    <div class="btn-row">
+      <button class="btn btn-gold" onclick="speakBookIntro()">🔊 朗读介绍</button>
+      <button class="btn btn-primary" onclick="closeBookIntro()">👍 完成</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-mask" id="craft-modal" onclick="if(event.target===this)closeCraftModal()">
+  <div class="modal craft-modal">
+    <div id="craft-detail"></div>
+    <div class="btn-row"><button class="btn btn-gold" onclick="speakCraftStory()">🔊 朗读故事</button><button class="btn btn-primary" onclick="closeCraftModal()">👍 看完啦</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<canvas id="confetti"></canvas>
+
+<script src="data/books.js"></script>
+<script src="data/crafts.js"></script>
+<script src="data/intros.js"></script>
+<script>
+"use strict";
+/* =========================================================
+   圣书智慧谜语 · 闯关乐园  App
+   ========================================================= */
+/* ---------- 基础数据 ---------- */
+const BOOKS = window.BIBLE_BOOKS || [];
+window.BIBLE_QUIZZES = window.BIBLE_QUIZZES || {};
+const DATA = window.BIBLE_QUIZZES;
+const CRAFTS = window.BIBLE_CRAFTS || {};
+const INTROS = window.BIBLE_INTROS || {};
+const PASS_TOTAL = 20, PASS_MIN = 12, STAR_2 = 15, STAR_3 = 18;
+const STORE_KEY = "bibleRiddleProg_v1", SET_KEY = "bibleRiddleSet_v1";
+
+/* ---------- 本地存储 ---------- */
+function defaultState(){ return {books:{}, records:{stats:{answered:0, correct:0}, wrongs:[], log:[]}} }
+function loadState(){
+  try{
+    const s = JSON.parse(localStorage.getItem(STORE_KEY));
+    if(s && s.books){
+      s.records = s.records || {stats:{answered:0, correct:0}, wrongs:[], log:[]};
+      s.records.stats = s.records.stats || {answered:0, correct:0};
+      s.records.wrongs = s.records.wrongs || [];
+      s.records.log = s.records.log || [];
+      return s;
+    }
+  }catch(e){}
+  return defaultState();
+}
+function saveState(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
+function defaultSet(){ return {sfx:true, tts:true, rate:1.0, voice:""} }
+function loadSet(){ try{ return Object.assign(defaultSet(), JSON.parse(localStorage.getItem(SET_KEY))); }catch(e){ return defaultSet(); } }
+function saveSet(){ try{ localStorage.setItem(SET_KEY, JSON.stringify(settings)); }catch(e){} updateSettingUI(); }
+
+let state = loadState();
+let settings = loadSet();
+
+function bookState(id){ state.books[id] = state.books[id] || {stages:{}}; return state.books[id]; }
+function stageState(bookId, key){ const b = bookState(bookId); b.stages[key] = b.stages[key] || {stars:0, best:0, done:false}; return b.stages[key]; }
+function stageKeys(bookId){ return Object.keys(DATA[bookId] || {}); }
+function isUnlocked(bookId, key){ return true; } // 全部关卡已解锁，自由挑战
+/* ---------- 个人操作记录 ---------- */
+function fmtTime(t){ const d = new Date(t||Date.now()); const p=n=>String(n).padStart(2,"0"); return (d.getMonth()+1) + "-" + p(d.getDate()) + " " + p(d.getHours()) + ":" + p(d.getMinutes()); }
+function logEvent(type, text){
+  const r = state.records;
+  r.log.unshift({t: Date.now(), type, text});
+  if(r.log.length > 100) r.log.length = 100;
+  saveState();
+}
+function recordWrong(bookId, stageKey, q){
+  const r = state.records;
+  const key = bookId + ":" + stageKey + ":" + q.q;
+  const found = r.wrongs.find(w => w.key === key);
+  if(found){ found.times++; found.t = Date.now(); }
+  else {
+    r.wrongs.unshift({key, book: bookId, stage: stageKey, q: q.q, options: q.options, answer: q.answer, ref: q.ref, verse: q.verse, explain: q.explain, times: 1, t: Date.now()});
+    if(r.wrongs.length > 200) r.wrongs.length = 200;
+    logEvent("wrong", "答错一题，已加入错题本：「" + q.q.slice(0,18) + (q.q.length>18?"…":"") + "」");
+  }
+  saveState();
+}
+function goRecord(){ stopSpeak(); view = "record"; renderRecord(); show("record"); }
+function renderRecord(){
+  const r = state.records, t = totals();
+  document.getElementById("rec-answered").textContent = r.stats.answered;
+  document.getElementById("rec-rate").textContent = r.stats.answered ? Math.round(r.stats.correct / r.stats.answered * 100) + "%" : "0%";
+  document.getElementById("rec-stars").textContent = t.stars;
+  document.getElementById("rec-passed").textContent = t.stagesDone;
+  document.getElementById("wrong-count").textContent = r.wrongs.length;
+  document.getElementById("rec-updated").textContent = r.log.length ? "最近 " + fmtTime(r.log[0].t) : "";
+  renderRecLog(); renderRecWrong(); renderRecPass();
+}
+function switchRecTab(ev){
+  const tab = ev.currentTarget.dataset.tab;
+  document.querySelectorAll(".rec-tab").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
+  document.getElementById("rec-log").style.display = tab === "log" ? "" : "none";
+  document.getElementById("rec-wrong").style.display = tab === "wrong" ? "" : "none";
+  document.getElementById("rec-pass").style.display = tab === "pass" ? "" : "none";
+}
+function renderRecLog(){
+  const log = state.records.log, el = document.getElementById("rec-log");
+  if(!log.length){ el.innerHTML = "<div class=\"rec-empty\"><span class=\"big\">🕒</span>还没有操作记录，快去闯关吧！</div>"; return; }
+  const icons = {pass:"🎉", fail:"💪", wrong:"❌", star3:"🌟", book:"🏆", clear:"🧹"};
+  el.innerHTML = "<div class=\"rec-timeline\">" + log.map(e =>
+    "<div class=\"rec-item\"><span class=\"ic\">" + (icons[e.type]||"📝") + "</span><span class=\"txt\">" + e.text + "</span>" +
+    "<div class=\"tm\">" + fmtTime(e.t) + "</div></div>").join("") + "</div>";
+}
+function renderRecWrong(){
+  const ws = state.records.wrongs, el = document.getElementById("rec-wrong");
+  if(!ws.length){ el.innerHTML = "<div class=\"rec-empty\"><span class=\"big\">🎉</span>太棒了，还没有错题！</div>"; return; }
+  const letters = ["A","B","C","D"];
+  el.innerHTML = ws.map(w => {
+    const b = BOOKS.find(x => x.id === w.book);
+    return "<div class=\"rec-wrong-card\">" +
+      "<div class=\"wq\">" + w.q + "</div>" +
+      "<div class=\"wa\">✅ 正确答案：" + letters[w.answer] + " " + w.options[w.answer] + "</div>" +
+      "<div class=\"wv\">📖 <b>" + w.ref + "</b><br>" + w.verse + "</div>" +
+      "<div class=\"we\">💡 " + w.explain + "</div>" +
+      "<div class=\"wm\"><span class=\"tag\">" + (b?b.name:w.book) + " · 第" + w.stage + "关</span><span>答错 " + w.times + " 次 · " + fmtTime(w.t) + "</span></div>" +
+      "</div>";
+  }).join("");
+}
+function renderRecPass(){
+  const el = document.getElementById("rec-pass");
+  let html = "", has = false;
+  BOOKS.forEach(b => {
+    const ks = stageKeys(b.id);
+    if(!ks.length) return;
+    ks.forEach((k, i) => {
+      const st = stageState(b.id, k);
+      if(!st.done) return;
+      has = true;
+      const sec = DATA[b.id][k];
+      const starsHtml = [1,2,3].map(n => "<span class=\"st " + (st.stars>=n?"on":"") + "\">⭐</span>").join("");
+      html += "<div class=\"rec-pass-card\"><div class=\"pc-icon\">" + b.icon + "</div>" +
+        "<div><div class=\"pc-title\">" + b.name + " · 第" + (i+1) + "关 · " + sec.title + "</div>" +
+        "<div class=\"pc-meta\">最佳成绩 " + st.best + "/" + sec.questions.length + " · " + sec.range + "</div></div>" +
+        "<div class=\"pc-stars\">" + starsHtml + "<div class=\"pc-best\">" + st.best + "分</div></div></div>";
+    });
+  });
+  el.innerHTML = has ? html : "<div class=\"rec-empty\"><span class=\"big\">🏅</span>还没有通关记录，快去闯关拿第一颗星吧！</div>";
+}
+
+function totals(){
+  let stars = 0, booksDone = 0, stagesDone = 0;
+  BOOKS.forEach(b => { const bs = state.books[b.id]; if(!bs) return; let done = 0;
+    Object.keys(DATA[b.id]||{}).forEach(k => { const st = bs.stages[k]; if(st){ stars += (st.stars||0); if(st.done) done++; } });
+    if(done >= stageKeys(b.id).length) booksDone++;
+    stagesDone += done;
+  });
+  return {stars, booksDone, stagesDone};
+}
+
+/* ---------- 书卷概论介绍 ---------- */
+function openBookIntro(){
+  const info = INTROS[bookId];
+  if(!info) return;
+  const b = BOOKS.find(x => x.id === bookId) || {icon:"📖"};
+  document.getElementById("bi-detail").innerHTML =
+    "<h3>" + b.icon + " " + info.name + " <span class=\"en\">" + info.en + "</span></h3>" +
+    "<div class=\"bi-meta\">📂 " + info.category + " · " + info.chapters + "章 · ✍️ 作者：" + info.author + "</div>" +
+    "<div class=\"bi-tag\">「" + info.tagline + "」</div>" +
+    "<div class=\"bi-theme\">主题：" + info.theme + "</div>" +
+    "<div class=\"bi-summary\">" + (info.long || info.summary) + "</div>" +
+    (info.verse ? "<div class=\"bi-verse\">📖 " + info.verseRef + "<br>「" + info.verse + "」</div>" : "");
+  document.getElementById("intro-modal").classList.add("show");
+}
+function closeBookIntro(){ document.getElementById("intro-modal").classList.remove("show"); }
+function speakBookIntro(){
+  const info = INTROS[bookId];
+  if(!info) return;
+  speak("《" + info.name + "》概论。共" + info.chapters + "章，传统上作者是" + info.author + "。主题：" + info.theme + "。" + (info.long || info.summary) + (info.verse ? "本卷金句：" + info.verse + "，" + info.verseRef + "。" : ""));
+}
+
+/* ---------- 圣书故事手工 ---------- */
+function goCrafts(){ stopSpeak(); view = "crafts"; renderCraftBooks(); show("crafts"); }
+function showCraftBooks(){
+  document.getElementById("craft-books").style.display = "";
+  document.getElementById("craft-list").style.display = "none";
+  window.scrollTo(0,0);
+}
+function renderCraftBooks(){
+  const el = document.getElementById("craft-books");
+  let total = 0;
+  BOOKS.forEach(b => { total += (CRAFTS[b.id] || []).length; });
+  document.getElementById("craft-count").textContent = "共 " + total + " 个手工";
+  let ot = "", nt = "";
+  BOOKS.forEach(b => {
+    const crafts = CRAFTS[b.id] || [];
+    if(!crafts.length) return;
+    const card = `<div class="craft-book" onclick="openCraftBook(\x27${b.id}\x27)"><span class="cb-icon">${b.icon}</span><span class="cb-name">${b.name}</span><span class="cb-count">${crafts.length}个故事</span></div>`;
+    if(b.num <= 39) ot += card; else nt += card;
+  });
+  el.innerHTML = "<div class=\"craft-group-title\">📖 旧约</div><div class=\"craft-grid\">" + ot + "</div><div class=\"craft-group-title\">📕 新约</div><div class=\"craft-grid\">" + nt + "</div>";
+}
+function openCraftBook(id){
+  document.getElementById("craft-books").style.display = "none";
+  const wrap = document.getElementById("craft-list");
+  wrap.style.display = "";
+  const crafts = CRAFTS[id] || [];
+  const b = BOOKS.find(x => x.id === id);
+  document.getElementById("craft-list-inner").innerHTML =
+    `<div class="craft-book-title">${b.icon} ${b.name} · ${crafts.length}个故事手工</div>` +
+    crafts.map((c, i) => `<div class="craft-card" onclick="openCraftDetail(\x27${id}\x27,${i})">` +
+      `<div class="cc-icon">${c.icon}</div>` +
+      `<div class="cc-body"><div class="cc-title">${c.title}</div>` +
+      `<div class="cc-ref">${c.ref}</div>` +
+      `<div class="cc-craft">✂️ ${c.craft}</div></div>` +
+      `<div class="cc-go">➡️</div></div>`).join("");
+  window.scrollTo(0,0);
+}
+function craftDemoSVG(c){
+  return "<svg viewBox=\"0 0 200 140\" role=\"img\"><rect width=\"200\" height=\"140\" rx=\"16\" fill=\"#fff6e8\"/><rect x=\"12\" y=\"10\" width=\"176\" height=\"92\" rx=\"12\" fill=\"#fff\"/><rect x=\"12\" y=\"10\" width=\"176\" height=\"92\" rx=\"12\" fill=\"none\" stroke=\"#f3e6c8\" stroke-width=\"3\"/><text x=\"100\" y=\"66\" text-anchor=\"middle\" font-size=\"52\">" + c.icon + "</text><text x=\"100\" y=\"122\" text-anchor=\"middle\" font-size=\"14\" font-weight=\"bold\" fill=\"#7c3aed\">✂️ " + c.craft + "</text><text x=\"100\" y=\"136\" text-anchor=\"middle\" font-size=\"10\" fill=\"#a99cc9\">材料见下方 · 跟着步骤做</text></svg>";
+}
+let currentCraft = null;
+function openCraftDetail(id, idx){
+  const c = (CRAFTS[id] || [])[idx];
+  if(!c) return;
+  currentCraft = { id, idx };
+  document.getElementById("craft-detail").innerHTML =
+    "<div class=\"cd-demo\">" + (c.svg ? c.svg : craftDemoSVG(c)) + "</div>" +
+    "<h3>" + c.icon + " " + c.title + "</h3>" +
+    "<div class=\"cd-ref\">📖 " + c.ref + "</div>" +
+    "<div class=\"cd-verse\">「" + c.verse + "」</div>" +
+    "<div class=\"cd-label\">📖 圣书故事</div>" +
+    "<div class=\"cd-story\">" + c.story + "</div>" +
+    "<div class=\"cd-label\">✂️ 手工：<span style=\"color:#b45309\">" + c.craft + "</span>（" + c.time + " · " + c.age + "）</div>" +
+    "<div class=\"cd-materials\"><b>需要材料：</b>" + c.materials.map(m => "<span class=\"chip2\">" + m + "</span>").join("") + "</div>" +
+    "<div class=\"cd-steps\"><b>制作步骤：</b><ol>" + c.steps.map(s => "<li>" + s + "</li>").join("") + "</ol></div>" +
+    (c.tips ? "<div class=\"cd-label\">💡 具体指导（家长/老师）</div><ul class=\"cd-tips\">" + c.tips.map(s => "<li>" + s + "</li>").join("") + "</ul>" : "") +
+    (c.reference ? "<div class=\"cd-label\">📎 参考</div><div class=\"cd-reference\">" + c.reference + "</div>" : "");
+  document.getElementById("craft-modal").classList.add("show");
+}
+function closeCraftModal(){ document.getElementById("craft-modal").classList.remove("show"); }
+function speakCraftStory(){
+  if(!currentCraft) return;
+  const c = (CRAFTS[currentCraft.id] || [])[currentCraft.idx];
+  if(!c) return;
+  speak(c.title + "。" + c.verse + "。" + c.story + " 今天做的手工是" + c.craft + "。需要" + c.materials.join("、") + "。小朋友，我们一起动手做吧！");
+}
+
+/* ---------- 视图路由 ---------- */
+let view = "home", bookId = "GEN", stageKey = "1", quiz = null, resultInfo = null;
+function show(v){
+  document.querySelectorAll(".view").forEach(el => el.classList.remove("active"));
+  const el = document.getElementById("view-" + v);
+  if(el){ el.classList.add("active"); }
+  window.scrollTo(0,0);
+}
+function stopSpeak(){ if("speechSynthesis" in window) speechSynthesis.cancel(); }
+function goHome(){ stopSpeak(); view="home"; renderHome(); show("home"); }
+function loadBookData(id, cb){
+  if(DATA[id]){ cb(); return; }
+  const b = BOOKS.find(x => x.id === id);
+  if(!b || !b.file){ cb(); return; }
+  const s = document.createElement("script");
+  s.src = "data/" + b.file;
+  s.onload = () => cb();
+  s.onerror = () => { toast("⚠️ 加载失败，请刷新重试"); };
+  document.head.appendChild(s);
+}
+function goBook(id){
+  if(id) bookId = id;
+  stopSpeak();
+  view = "book";
+  const b = BOOKS.find(x => x.id === bookId);
+  if(DATA[bookId]){ renderBook(); show("book"); }
+  else {
+    document.getElementById("bh-icon").textContent = b.icon;
+    document.getElementById("bh-name").textContent = b.name;
+    document.getElementById("bh-en").textContent = b.en;
+    document.getElementById("bh-progress").innerHTML = "⏳ 加载中…";
+    document.getElementById("road").innerHTML = "<div class=\"rec-empty\"><span class=\"big\">⏳</span>正在打开《" + b.name + "》…</div>";
+    show("book");
+    loadBookData(bookId, () => { renderBook(); });
+  }
+}
+function goIntro(key){ if(key) stageKey = key; stopSpeak(); view="intro"; renderIntro(); show("intro"); }
+function confirmExit(){ if(!quiz || quiz.idx === 0){ goBook(); return; } if(confirm("确定要退出本关吗？已答的题将不计入成绩。")) goBook(); }
+
+/* ---------- 首页：66卷路线图 ---------- */
+function renderHome(){
+  const grid = document.getElementById("books-grid");
+  grid.innerHTML = "";
+  const t = totals();
+  document.getElementById("stat-stars").textContent = t.stars;
+  document.getElementById("stat-books").textContent = t.booksDone;
+  document.getElementById("stat-stages").textContent = t.stagesDone;
+  BOOKS.forEach(b => {
+    const card = document.createElement("div");
+    card.className = "book-card " + (b.available ? "available" : "locked");
+    const ks = stageKeys(b.id);
+    let done = 0, stars = 0;
+    ks.forEach(k => { const st = stageState(b.id, k); if(st.done) done++; stars += (st.stars||0); });
+    const pct = ks.length ? Math.round(done/ks.length*100) : 0;
+    let dots = "";
+    ks.forEach(k => { const st = stageState(b.id, k); dots += `<span class="pdot ${st.done?"on":""}"></span>`; });
+    const loaded = ks.length > 0;
+    card.innerHTML = `
+      <span class="book-icon">${b.icon}</span>
+      <div class="book-name">${b.name}</div>
+      <div class="book-en">${b.en}</div>
+      ${loaded
+        ? `<div class="book-meta">${done}/${ks.length}关 · ⭐${stars}</div>
+           <div class="progress-dots">${dots}</div>
+           <span class="go">${done===0?"开始闯关":pct===100?"🎉 已通关":"继续闯关"}</span>`
+        : `<div class="book-meta">${b.chapters}章 · 650题</div><span class="go">📖 打开书卷</span>`}`;
+    card.onclick = () => {
+      if(b.available){ sfxClick(); goBook(b.id); }
+      else { toast("《" + b.name + "》正在制作中，先闯《创世记》吧！"); }
+    };
+    grid.appendChild(card);
+  });
+}
+
+/* ---------- 卷内闯关地图 ---------- */
+function renderBook(){
+  const b = BOOKS.find(x => x.id === bookId) || BOOKS[0];
+  document.getElementById("bh-icon").textContent = b.icon;
+  document.getElementById("bh-name").textContent = b.name;
+  document.getElementById("bh-en").textContent = b.en;
+  const ks = stageKeys(bookId);
+  let done = 0, stars = 0;
+  ks.forEach(k => { const st = stageState(bookId, k); if(st.done) done++; stars += (st.stars||0); });
+  document.getElementById("bh-progress").innerHTML = `⭐ ${stars} 星<br>${done}/${ks.length} 关已通过`;
+  const road = document.getElementById("road");
+  road.innerHTML = "";
+  ks.forEach((k, i) => {
+    const sec = DATA[bookId][k];
+    const st = stageState(bookId, k);
+    const unlocked = isUnlocked(bookId, k);
+    const el = document.createElement("div");
+    el.className = "stage" + (unlocked ? "" : " locked") + (st.done ? " done" : "");
+    const starsHtml = [1,2,3].map(n => `<span class="st ${st.stars>=n?"on":""}">⭐</span>`).join("");
+    el.innerHTML = `
+      <div class="stage-num" style="background:${b.color}"><b>${i+1}</b><small>${sec.range.replace(b.name + " ","")}</small></div>
+      <div class="stage-info">
+        <div class="t">${i+1}. ${sec.title}</div>
+        <div class="r">${sec.range} · ${sec.questions.length}题</div>
+        <div class="stage-stars">${starsHtml}</div>
+      </div>
+      <span class="stage-go">${unlocked ? (st.done ? "✅ 已通过" : "▶️ 开始") : "🔒"}</span>`;
+    el.onclick = () => {
+      if(!unlocked){ toast("先通过上一关才能解锁哦！"); return; }
+      sfxClick(); goIntro(k);
+    };
+    road.appendChild(el);
+  });
+  const end = document.getElementById("road-end");
+  const allDone = ks.length && done === ks.length;
+  end.innerHTML = allDone ? "🎉 恭喜！《" + b.name + "》全部通关，650题全部拿下！" : "🌟 全部关卡已解锁！每关（故事）5 道谜语 + 10 道问题，答对9题即过关。";
+}
+
+/* ---------- 关卡介绍 ---------- */
+function renderIntro(){
+  const sec = DATA[bookId][stageKey];
+  const b = BOOKS.find(x => x.id === bookId);
+  document.getElementById("intro-title").textContent = stageKey + ". " + sec.title;
+  document.getElementById("intro-range").textContent = sec.range + " · " + b.name;
+  document.getElementById("intro-desc").textContent = sec.desc;
+  document.getElementById("intro-comic").innerHTML = comicSVG(sec.scene, sec.title);
+  document.getElementById("intro-qnum").textContent = sec.questions.length;
+  document.getElementById("intro-per").textContent = "5+10";
+  document.getElementById("intro-pass").textContent = Math.ceil(quizPer(sec) * 0.6);
+}
+function speakIntro(){
+  const sec = DATA[bookId][stageKey];
+  speak(`欢迎来到${sec.title}。${sec.range}。${sec.desc} 每关有5道谜语和10道问题，共15题，答对${Math.ceil(quizPer(sec) * 0.6)}题就能过关。加油！`);
+}
+
+/* ---------- 答题引擎 ---------- */
+function quizPer(sec){ return Math.min(15, sec.questions.length); }
+function shuffleArr(a){
+  for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); const tmp = a[i]; a[i] = a[j]; a[j] = tmp; }
+  return a;
+}
+function startQuiz(){
+  const sec = DATA[bookId][stageKey];
+  // 每关（故事）：5 道谜语 + 10 道问题 = 15 题，随机组成、随机顺序
+  const riddles = shuffleArr(sec.questions.filter(q => q.type === "riddle").slice());
+  const questions = shuffleArr(sec.questions.filter(q => q.type !== "riddle").slice());
+  const list = shuffleArr(riddles.slice(0, 5).concat(questions.slice(0, 10)));
+  quiz = { sec, list: list.length ? list : sec.questions.slice(0, quizPer(sec)), idx: 0, score: 0, answered: false, results: {} };
+  renderQuestion();
+  show("quiz");
+}
+function renderQuestion(){
+  const q = quiz.list[quiz.idx];
+  const b = BOOKS.find(x => x.id === bookId);
+  document.getElementById("q-passage").textContent = `第${stageKey}关 · ${quiz.sec.title}`;
+  const qt = document.getElementById("q-type");
+  if(q.type === "riddle"){ qt.textContent = "🧩 谜语"; qt.className = "type-badge riddle"; }
+  else { qt.textContent = "❓ 问题"; qt.className = "type-badge question"; }
+  document.getElementById("q-text").textContent = q.q;
+  document.getElementById("qp-fill").style.width = (quiz.idx / quiz.list.length * 100) + "%";
+  document.getElementById("qp-label").textContent = `第 ${quiz.idx+1} / ${quiz.list.length} 题`;
+  document.getElementById("qp-score").textContent = "⭐ " + quiz.score;
+  const opts = document.getElementById("opts");
+  opts.innerHTML = "";
+  const letters = ["A","B","C","D"];
+  // 随机打乱选项顺序（记录原始下标，便于判分）
+  const order = q.options.map((_, i) => i);
+  for(let k = order.length - 1; k > 0; k--){ const j = Math.floor(Math.random() * (k + 1)); const tmp = order[k]; order[k] = order[j]; order[j] = tmp; }
+  quiz.order = order;
+  order.forEach((origIdx, dispIdx) => {
+    const btn = document.createElement("button");
+    btn.className = "opt";
+    btn.innerHTML = `<span class="alpha">${letters[dispIdx]}</span><span>${q.options[origIdx]}</span>`;
+    btn.onclick = () => answer(origIdx);
+    opts.appendChild(btn);
+  });
+  document.getElementById("feedback").className = "feedback";
+  document.getElementById("feedback").innerHTML = "";
+  const nr = document.getElementById("next-row");
+  const nrState = quiz.results[quiz.idx];
+  if(nrState && !nrState.skipped){
+    nr.innerHTML = `<button class="btn btn-primary" onclick="nextQuestion()">${quiz.idx === quiz.list.length-1 ? "🏁 查看成绩" : "下一题 ➡️"}</button>`;
+  } else {
+    nr.innerHTML = `<button class="btn btn-ghost skip-btn" onclick="skipQuestion()" title="不会答就跳过，跳过不计分">⏭️ 跳过此题</button>`;
+  }
+  const lb = document.getElementById("btn-listen-q");
+  lb.className = "listen-btn";
+  lb.textContent = "🔊";
+  quiz.answered = false;
+  renderQNav();
+}
+function toggleQNav(force){
+  const w = document.getElementById("q-nav-wrap");
+  const show = force !== undefined ? force : !w.classList.contains("show");
+  w.classList.toggle("show", show);
+}
+function jumpTo(idx){
+  if(idx < 0 || idx >= quiz.list.length) return;
+  stopSpeak();
+  quiz.idx = idx;
+  quiz.answered = false;
+  renderQuestion();
+}
+function skipQuestion(){
+  if(quiz.answered) return;
+  quiz.results[quiz.idx] = { skipped: true };
+  renderQNav();
+  if(quiz.idx >= quiz.list.length - 1){ finishQuiz(); return; }
+  quiz.idx++;
+  renderQuestion();
+}
+function renderQNav(){
+  const grid = document.getElementById("q-nav-grid");
+  if(!grid || !quiz) return;
+  let html = "";
+  quiz.list.forEach((_, i) => {
+    const r = quiz.results[i];
+    let cls = "qnav-btn";
+    if(i === quiz.idx) cls += " cur";
+    else if(r) cls += r.skipped ? " skip" : (r.ok ? " ok" : " no");
+    html += "<button class=\"" + cls + "\" onclick=\"jumpTo(" + i + ")\" title=\"第" + (i+1) + "题\">" + (i+1) + "</button>";
+  });
+  grid.innerHTML = html;
+}
+function currentQuestion(){ return quiz.list[quiz.idx]; }
+function answer(i){
+  if(quiz.answered) return;
+  quiz.answered = true;
+  const q = currentQuestion();
+  const ok = (i === q.answer);
+  quiz.results[quiz.idx] = { ok };
+  quiz.score = Object.values(quiz.results).filter(r => r.ok).length;
+  if(ok){ sfxCorrect(); } else { sfxWrong(); recordWrong(bookId, stageKey, q); }
+  speakFeedback(ok);
+  state.records.stats.answered++;
+  if(ok) state.records.stats.correct++;
+  saveState();
+  const optBtns = document.querySelectorAll("#opts .opt");
+  const correctDisp = quiz.order ? quiz.order.indexOf(q.answer) : q.answer;
+  optBtns.forEach((btn, j) => {
+    if(j === correctDisp) btn.classList.add("correct");
+    else if(quiz.order ? quiz.order[j] === i : j === i) btn.classList.add("wrong");
+    else btn.classList.add("dim");
+    btn.onclick = null;
+  });
+  const fb = document.getElementById("feedback");
+  fb.className = "feedback show " + (ok ? "ok" : "no");
+  const letters = ["A","B","C","D"];
+  const correctLetter = letters[quiz.order ? quiz.order.indexOf(q.answer) : q.answer];
+  fb.innerHTML = `
+    <div class="fb-title">${ok ? "🎉 答对了，太棒了！" : "😅 哦哦，继续加油，再想想！正确答案是 " + correctLetter}</div>
+    <div class="fb-verse">📖 <b>${q.ref}</b><br>${q.verse}</div>
+    <div class="fb-explain">💡 ${q.explain}</div>
+    <div class="fb-audio">
+      <button class="btn btn-ghost btn-small" onclick="speakVerse()">🔊 朗读经文</button>
+      <button class="btn btn-ghost btn-small" onclick="speakExplain()">🔊 朗读解析</button>
+    </div>`;
+  const next = document.getElementById("next-row");
+  next.innerHTML = `<button class="btn btn-primary" onclick="nextQuestion()">${quiz.idx === quiz.list.length-1 ? "🏁 查看成绩" : "下一题 ➡️"}</button>`;
+  renderQNav();
+}
+function nextQuestion(){
+  stopSpeak();
+  if(quiz.idx >= quiz.list.length - 1){ finishQuiz(); return; }
+  quiz.idx++;
+  renderQuestion();
+}
+function speakQuestion(){
+  const q = currentQuestion();
+  const letters = ["第一","第二","第三","第四"];
+  speak(`第${quiz.idx+1}题。${q.q} ${q.options.map((o,i)=>`${letters[i]}个选项，${o}`).join("。")}`);
+}
+function speakVerse(){ const q = currentQuestion(); speak(`${q.verse}。${q.ref}`); }
+function speakExplain(){ const q = currentQuestion(); speak(q.explain); }
+
+/* ---------- 结算 ---------- */
+function finishQuiz(){
+  const sec = quiz.sec;
+  const score = quiz.score;
+  const n = quiz.list.length;
+  const passAt = Math.ceil(n * 0.6), star2At = Math.ceil(n * 0.75), star3At = Math.ceil(n * 0.9);
+  const stars = score >= star3At ? 3 : score >= star2At ? 2 : score >= passAt ? 1 : 0;
+  const pass = score >= passAt;
+  const st = stageState(bookId, stageKey);
+  const prevBest = st.best;
+  st.best = Math.max(st.best, score);
+  if(pass && stars > st.stars) st.stars = stars;
+  if(pass) st.done = true;
+  saveState();
+  const b = BOOKS.find(x => x.id === bookId);
+  if(pass){
+    logEvent("pass", "完成《" + b.name + "》第" + stageKey + "关「" + sec.title + "」：答对 " + score + "/" + quiz.list.length + "，获得 " + stars + " 颗星");
+    if(stars === 3) logEvent("star3", "🌟 在《" + b.name + "》第" + stageKey + "关「" + sec.title + "」拿到三星！");
+    const ksAll = stageKeys(bookId);
+    if(ksAll.every(k => stageState(bookId, k).done)) logEvent("book", "🏆 恭喜！通关《" + b.name + "》全部 " + ksAll.length + " 关！");
+  } else {
+    logEvent("fail", "《" + b.name + "》第" + stageKey + "关「" + sec.title + "」答对 " + score + "/" + quiz.list.length + "，还差一点点，加油！");
+  }
+  const skipped = Object.values(quiz.results).filter(x => x && x.skipped).length;
+  resultInfo = {sec, score, stars, pass, prevBest, total: quiz.list.length, skipped};
+  renderResult();
+  show("result");
+  if(pass){ confetti(); sfxFanfare(); } else { sfxWrong(); }
+}
+function renderResult(){
+  const r = resultInfo;
+  const b = BOOKS.find(x => x.id === bookId);
+  document.getElementById("result-sub").textContent = `${b.name} · 第${stageKey}关 · ${r.sec.title}`;
+  document.getElementById("result-title").textContent = r.pass ? (r.stars===3?"🌟 完美过关！":"🎉 过关啦！") : "💪 差一点点！";
+  document.getElementById("res-score").textContent = r.score;
+  document.getElementById("res-total").textContent = r.total || r.sec.questions.length;
+  document.getElementById("res-best").textContent = stageState(bookId, stageKey).best;
+  const starsBox = document.getElementById("result-stars");
+  starsBox.innerHTML = [1,2,3].map(n => `<span class="st ${r.stars>=n?"on":""}" style="animation-delay:${n*0.18}s">⭐</span>`).join("");
+  const msg = r.pass
+    ? (r.stars===3 ? "太棒了！" + r.sec.questions.length + "题中答对 " + r.score + " 题，正确率超高，你真是个圣书小博士！" :
+       r.stars===2 ? "答得真不错！继续加油，争取三颗星！" : "过关啦！多读圣书，下次拿更多星星！")
+    : "还差一点点，再玩一次，把这一关拿下！记住：答案都在圣书里哦。";
+  document.getElementById("result-msg").textContent = msg;
+  const skipEl = document.getElementById("res-skip");
+  if(r.skipped > 0){ skipEl.style.display = ""; skipEl.textContent = "⏭️ 跳过 " + r.skipped + " 题（未计分，可跳题回去补答）"; }
+  else { skipEl.style.display = "none"; }
+  const nextBtn = document.getElementById("btn-next-stage");
+  const ks = stageKeys(bookId);
+  const idx = ks.indexOf(stageKey);
+  const hasNext = idx < ks.length - 1;
+  nextBtn.style.display = (r.pass && hasNext) ? "" : "none";
+  nextBtn.textContent = hasNext ? `下一关：${DATA[bookId][ks[idx+1]].title} ➡️` : "🏆 已完成全部关卡";
+  const mascotEl = document.getElementById("mascot-result");
+  mascotEl.innerHTML = mascotSVG(r.pass ? "happy" : "sad");
+  mascotEl.setAttribute("class", "mascot " + (r.pass ? "happy" : "sad"));
+}
+function retryQuiz(){ sfxClick(); startQuiz(); }
+function nextStage(){
+  const ks = stageKeys(bookId);
+  const idx = ks.indexOf(stageKey);
+  if(idx < ks.length - 1){ stageKey = ks[idx+1]; goIntro(); } else { goBook(); }
+}
+
+/* ---------- 设置 ---------- */
+function openSettings(){
+  document.getElementById("modal-settings").classList.add("show");
+  updateSettingUI();
+  populateVoices();
+}
+function closeSettings(){ document.getElementById("modal-settings").classList.remove("show"); }
+function updateSettingUI(){
+  document.getElementById("set-sfx").checked = settings.sfx;
+  document.getElementById("set-tts").checked = settings.tts;
+  document.getElementById("rate-val").textContent = settings.rate.toFixed(1) + "x";
+}
+function saveSettings(){
+  settings.sfx = document.getElementById("set-sfx").checked;
+  settings.tts = document.getElementById("set-tts").checked;
+  saveSet();
+  document.getElementById("btn-sound").textContent = settings.sfx ? "🔊" : "🔇";
+  document.getElementById("btn-sound").classList.toggle("off", !settings.sfx);
+}
+function toggleSound(){ settings.sfx = !settings.sfx; saveSet(); toast(settings.sfx ? "🔊 音效已开启" : "🔇 音效已关闭"); }
+function adjRate(d){ settings.rate = Math.min(2, Math.max(0.5, Math.round((settings.rate + d) * 10) / 10)); saveSet(); }
+function clearProgress(){
+  if(!confirm("确定要清除所有闯关进度吗？")) return;
+  state = defaultState(); saveState(); renderHome();
+  if(view === "book") renderBook();
+  toast("🧹 进度已清除");
+}
+let voicesCache = [];
+function populateVoices(){
+  const list = document.getElementById("voice-list");
+  if(!("speechSynthesis" in window)){ list.innerHTML = "<span style='font-size:12px;color:#888'>当前浏览器不支持语音朗读</span>"; return; }
+  const pick = () => {
+    const vs = speechSynthesis.getVoices().filter(v => /zh|cmn|Chinese/i.test(v.lang + " " + v.name));
+    if(!vs.length) return;
+    voicesCache = vs;
+    list.innerHTML = "";
+    const all = document.createElement("span");
+    all.className = "voice-chip" + (settings.voice === "" ? " on" : "");
+    all.textContent = "🔄 自动";
+    all.onclick = () => { settings.voice = ""; saveSet(); };
+    list.appendChild(all);
+    const seen = {};
+    vs.forEach(v => {
+      const label = v.name.replace(/Microsoft|Google|System|online|natural|Neural|local|网络|本地/g, "").trim() || v.name;
+      if(seen[label]) return; seen[label] = 1;
+      const c = document.createElement("span");
+      c.className = "voice-chip" + (settings.voice === v.name ? " on" : "");
+      c.textContent = label.length > 12 ? label.slice(0,12) + "…" : label;
+      c.title = v.name;
+      c.onclick = () => { settings.voice = v.name; saveSet(); };
+      list.appendChild(c);
+    });
+  };
+  pick();
+  if(!voicesCache.length) speechSynthesis.onvoiceschanged = pick;
+}
+
+/* ---------- 语音朗读（浏览器TTS） ---------- */
+function pickVoice(){
+  if(!("speechSynthesis" in window)) return null;
+  if(settings.voice){
+    const v = speechSynthesis.getVoices().find(x => x.name === settings.voice);
+    if(v) return v;
+  }
+  const vs = speechSynthesis.getVoices().filter(v => /zh|cmn|Chinese/i.test(v.lang + " " + v.name));
+  const fav = vs.find(v => /Xiaoxiao|晓晓|Yunxi|云希|婷婷|Tingting|Meijia|美佳|Huihui|Yaoyao|Kangkang|普通话/i.test(v.name));
+  return fav || vs[0] || null;
+}
+function speak(text){
+  if(!settings.tts || !("speechSynthesis" in window) || !text) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = "zh-CN";
+  u.rate = settings.rate;
+  const v = pickVoice();
+  if(v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+function speakFeedback(ok){
+  // 答题后的语音反馈：答对/答错
+  if(!settings.tts || !("speechSynthesis" in window)) return;
+  const v = ok ? "答对了，太棒了！" : "哦哦，继续加油，再想想！";
+  speak(v);
+}
+
+/* ---------- 音效（WebAudio） ---------- */
+let actx = null;
+function ac(){
+  if(!actx){ const AC = window.AudioContext || window.webkitAudioContext; if(AC) actx = new AC(); }
+  if(actx && actx.state === "suspended") actx.resume();
+  return actx;
+}
+function tone(freq, t0, dur, type, vol){
+  const a = ac(); if(!a) return;
+  try{
+    const o = a.createOscillator(), g = a.createGain();
+    o.type = type || "sine"; o.frequency.value = freq;
+    const t = a.currentTime + t0;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol || 0.16, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(a.destination);
+    o.start(t); o.stop(t + dur + 0.06);
+  }catch(e){}
+}
+function sfxClick(){ if(!settings.sfx) return; tone(700, 0, 0.08, "triangle", 0.1); }
+function sfxCorrect(){ if(!settings.sfx) return; [523,659,784,1047].forEach((f,i)=>tone(f, i*0.09, 0.22, "sine", 0.15)); }
+function sfxWrong(){ if(!settings.sfx) return; tone(220, 0, 0.18, "sawtooth", 0.07); tone(165, 0.16, 0.3, "sawtooth", 0.07); }
+function sfxFanfare(){ if(!settings.sfx) return; [523,659,784,1047,1319,1568].forEach((f,i)=>tone(f, i*0.12, 0.32, "triangle", 0.15)); }
+function sfxStar(){ if(!settings.sfx) return; [1047,1319,1568].forEach((f,i)=>tone(f, i*0.07, 0.16, "sine", 0.13)); }
+
+/* ---------- 彩带 ---------- */
+let confParticles = [], confAnim = 0;
+function confetti(dur){
+  const cv = document.getElementById("confetti");
+  if(!cv || !cv.getContext) return;
+  const ctx = cv.getContext("2d");
+  cv.width = window.innerWidth; cv.height = window.innerHeight;
+  const colors = ["#ffc94d","#ec4899","#22c55e","#3b82f6","#a855f7","#ef4444","#f97316","#14b8a6"];
+  confParticles = [];
+  for(let i=0;i<150;i++){
+    confParticles.push({x:Math.random()*cv.width, y:-20-Math.random()*cv.height*0.6,
+      w:6+Math.random()*7, h:8+Math.random()*8, c:colors[i%colors.length],
+      vy:2+Math.random()*3.2, vx:-1.5+Math.random()*3, rot:Math.random()*Math.PI, vr:-0.15+Math.random()*0.3});
+  }
+  const start = Date.now(), total = dur || 3000;
+  cancelAnimationFrame(confAnim);
+  function step(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    let alive = false;
+    confParticles.forEach(p=>{
+      p.x += p.vx + Math.sin(p.y*0.01)*1.2; p.y += p.vy; p.rot += p.vr;
+      if(p.y < cv.height + 30) alive = true;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h); ctx.restore();
+    });
+    if(alive && Date.now()-start < total) confAnim = requestAnimationFrame(step);
+    else ctx.clearRect(0,0,cv.width,cv.height);
+  }
+  step();
+}
+
+/* ---------- 提示条 ---------- */
+let toastTimer = 0;
+function toast(msg){
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("show"), 1900);
+}
+
+/* ---------- 吉祥物（猫头鹰小博士） ---------- */
+function mascotSVG(mood){
+  return `
+  <g>
+    <ellipse cx="60" cy="62" rx="41" ry="43" fill="#8b5cf6"/>
+    <ellipse cx="60" cy="76" rx="28" ry="27" fill="#ede9fe"/>
+    <ellipse class="wing" cx="21" cy="66" rx="15" ry="23" fill="#7c3aed"/>
+    <ellipse class="wing" cx="99" cy="66" rx="15" ry="23" fill="#7c3aed"/>
+    <circle cx="45" cy="52" r="14" fill="#fff" stroke="#3a2b5c" stroke-width="3"/>
+    <circle cx="75" cy="52" r="14" fill="#fff" stroke="#3a2b5c" stroke-width="3"/>
+    <circle class="eye" cx="48" cy="52" r="6" fill="#3a2b5c"/>
+    <circle class="eye" cx="72" cy="52" r="6" fill="#3a2b5c"/>
+    <circle cx="50" cy="49.5" r="2" fill="#fff"/>
+    <circle cx="74" cy="49.5" r="2" fill="#fff"/>
+    <path class="mouth" d="M52 66 Q60 ${mood==="happy"?"77":"73"} 68 66" fill="none" stroke="#3a2b5c" stroke-width="3.2" stroke-linecap="round"/>
+    <rect x="33" y="96" width="54" height="8" rx="4" fill="#ffb300"/>
+    <rect x="42" y="104" width="36" height="7" rx="3.5" fill="#ffb300"/>
+    <rect x="50" y="24" width="20" height="12" rx="4" fill="#ffd54f"/>
+    <path d="M60 24 L60 12 M52 18 L60 24 L68 18" fill="none" stroke="#ffd54f" stroke-width="3" stroke-linecap="round"/>
+  </g>`;
+}
+
+/* =========================================================
+   SVG 漫画场景（每段一个）
+   ========================================================= */
+function comicSVG(id, caption){
+  const map = {
+    creation: sceneCreation(), fall: sceneFall(), ark: sceneArk(), babel: sceneBabel(),
+    stars: sceneStars(), sacrifice: sceneSacrifice(), well: sceneWell(),
+    ladder: sceneLadder(), coat: sceneCoat(), pharaoh: scenePharaoh(),
+    bush: sceneBush(), plague: scenePlague(), redsea: sceneRedsea(), sinai: sceneSinai()
+  };
+  const inner = map[id] || sceneCreation();
+  return `<svg viewBox="0 0 400 260" role="img" aria-label="${caption||""}">${inner}</svg>`;
+}
+function sparkles(pts){
+  return pts.map(p => `<path class="cl-sparkle" d="M${p[0]} ${p[1]-6} L${p[0]+1.5} ${p[1]-1.5} L${p[0]+6} ${p[1]} L${p[0]+1.5} ${p[1]+1.5} L${p[0]} ${p[1]+6} L${p[0]-1.5} ${p[1]+1.5} L${p[0]-6} ${p[1]} L${p[0]-1.5} ${p[1]-1.5} Z" fill="#fff" opacity=".9"/>`).join("");
+}
+function birds(){
+  return `<g class="cl-bird" fill="none" stroke="#3d5a80" stroke-width="2.5" stroke-linecap="round">
+    <path d="M60 46 q6 -6 12 0 q6 -6 12 0"/><path d="M150 34 q5 -5 10 0 q5 -5 10 0"/>
+    <path d="M230 52 q5 -5 10 0 q5 -5 10 0"/></g>`;
+}
+function waves(y, color, h){
+  return `<g fill="none" stroke="${color}" stroke-width="3" opacity=".55">
+    <path class="cl-wave" d="M0 ${y} q20 -${h} 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0"/>
+    <path class="cl-wave" style="animation-delay:1.2s" d="M-40 ${y+12} q20 -${h} 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0"/></g>`;
+}
+function sceneCreation(){
+  return `
+  <defs><linearGradient id="g-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6db3f2"/><stop offset="1" stop-color="#cdeaff"/></linearGradient>
+  <linearGradient id="g-sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5ec8f7"/><stop offset="1" stop-color="#2f89d8"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-sky)"/>
+  <g class="cl-sun"><circle cx="330" cy="66" r="32" fill="#ffd54f"/><g stroke="#ffd54f" stroke-width="3" opacity=".8">
+    <line x1="330" y1="20" x2="330" y2="8"/><line x1="330" y1="112" x2="330" y2="124"/>
+    <line x1="284" y1="66" x2="272" y2="66"/><line x1="376" y1="66" x2="388" y2="66"/>
+    <line x1="297" y1="33" x2="289" y2="25"/><line x1="363" y1="99" x2="371" y2="107"/>
+    <line x1="297" y1="99" x2="289" y2="107"/><line x1="363" y1="33" x2="371" y2="25"/></g></g>
+  <g class="cl-ray" opacity=".45"><polygon points="80,0 130,0 150,150 60,150" fill="#fff8dc"/><polygon points="170,0 210,0 225,120 155,120" fill="#fff8dc"/></g>
+  ${birds()}
+  <rect y="196" width="400" height="64" fill="url(#g-sea)"/>
+  <path d="M0 196 q40 -10 80 0 t80 0 t80 0 t80 0 t80 0" fill="#8fd8fb" opacity=".8"/>
+  ${waves(206,"#bdeaff",5)}
+  <circle cx="200" cy="150" r="34" fill="#4ca3ee"/><path d="M178 142 q14 -12 30 0 q8 16 20 4 q12 -8 20 6 l-12 22 h-58 z" fill="#7ac74f"/>
+  <path d="M188 196 q10 -14 24 -6 q12 -6 18 6 z" fill="#7ac74f"/>
+  ${sparkles([[60,120],[120,170],[250,120],[300,170],[60,240]])}
+  <g transform="translate(330,178)" opacity=".9"><circle cx="0" cy="0" r="12" fill="#fff"/><circle cx="10" cy="6" r="12" fill="#fff" opacity=".7"/><circle cx="-8" cy="8" r="9" fill="#fff" opacity=".6"/></g>`;
+}
+function sceneFall(){
+  return `
+  <defs><linearGradient id="g-fall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9ed9a0"/><stop offset="1" stop-color="#e7f7dc"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-fall)"/>
+  <circle cx="60" cy="52" r="26" fill="#ffd54f"/>
+  <path d="M0 210 q100 -30 200 -10 t200 10 v50 h-400 z" fill="#7ac74f"/>
+  <g><rect x="180" y="80" width="26" height="130" rx="8" fill="#8d6e63"/><path d="M176 92 q-60 -30 -50 -84 q50 20 52 84 M206 92 q60 -30 50 -84 q-50 20 -52 84" fill="#5aa653"/></g>
+  <g class="cl-snake"><path d="M193 96 q14 -10 6 -26 q-10 -16 2 -24" fill="none" stroke="#2e7d32" stroke-width="8" stroke-linecap="round"/><circle cx="200" cy="44" r="7" fill="#2e7d32"/><circle cx="203" cy="42" r="2.4" fill="#fff"/></g>
+  <circle cx="206" cy="78" r="7" fill="#e53935"/><path d="M206 78 l5 2 -4 1 z" fill="#a4c639"/>
+  <g transform="translate(120,150)"><circle cx="0" cy="0" r="16" fill="#ffe0b2"/><circle cx="16" cy="6" r="16" fill="#ffe0b2"/><circle cx="8" cy="-14" r="16" fill="#ffe0b2"/><path d="M4 8 q6 14 12 6 l-2 22 h-8 z" fill="#c5862e"/></g>
+  <g transform="translate(268,150)"><circle cx="0" cy="0" r="15" fill="#ffd9b0"/><circle cx="15" cy="6" r="15" fill="#ffd9b0"/><circle cx="7" cy="-13" r="15" fill="#ffd9b0"/><path d="M4 8 q6 12 11 4 l-1 20 h-9 z" fill="#e0a848"/></g>
+  ${sparkles([[320,80],[40,120],[360,150]])}`;
+}
+function sceneArk(){
+  return `
+  <defs><linearGradient id="g-ark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fc9f5"/><stop offset="1" stop-color="#dff3ff"/></linearGradient>
+  <linearGradient id="g-arksea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#57bdf0"/><stop offset="1" stop-color="#2b7fc4"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-ark)"/>
+  <g opacity=".95"><ellipse cx="84" cy="46" rx="36" ry="14" fill="#fff"/><ellipse cx="106" cy="38" rx="24" ry="12" fill="#fff"/><ellipse cx="64" cy="40" rx="20" ry="11" fill="#fff"/></g>
+  <g opacity=".9"><ellipse cx="320" cy="56" rx="32" ry="13" fill="#fff"/><ellipse cx="340" cy="48" rx="22" ry="11" fill="#fff"/><ellipse cx="302" cy="50" rx="18" ry="10" fill="#fff"/></g>
+  <path class="cl-rainbow" d="M70 210 Q200 40 330 210" fill="none" stroke="#ef4444" stroke-width="8" opacity=".75"/>
+  <path class="cl-rainbow" d="M80 210 Q200 55 320 210" fill="none" stroke="#f59e0b" stroke-width="8" opacity=".75"/>
+  <path class="cl-rainbow" d="M90 210 Q200 70 310 210" fill="none" stroke="#22c55e" stroke-width="8" opacity=".75"/>
+  <path class="cl-rainbow" d="M100 210 Q200 85 300 210" fill="none" stroke="#3b82f6" stroke-width="8" opacity=".75"/>
+  <path class="cl-rainbow" d="M110 210 Q200 100 290 210" fill="none" stroke="#8b5cf6" stroke-width="8" opacity=".75"/>
+  <rect y="176" width="400" height="84" fill="url(#g-arksea)"/>
+  <path d="M0 176 q40 -10 80 0 t80 0 t80 0 t80 0 t80 0" fill="#7ecdf5" opacity=".85"/>
+  ${waves(190,"#d9f3ff",6)}
+  <g>
+    <path d="M96 176 L150 176 L196 176 L236 150 L236 88 L84 88 L64 130 Z" fill="#a4713d"/>
+    <rect x="84" y="62" width="152" height="30" rx="4" fill="#8a5a28"/>
+    <path d="M96 62 v-18 q8 -10 16 0 v18" fill="#a4713d"/>
+    <rect x="118" y="74" width="34" height="24" fill="#ffe0b2"/><rect x="158" y="74" width="34" height="24" fill="#ffe0b2"/><rect x="198" y="74" width="24" height="24" fill="#ffe0b2"/>
+    <rect x="108" y="96" width="12" height="80" fill="#8a5a28"/><rect x="224" y="96" width="12" height="80" fill="#8a5a28"/>
+    <g transform="translate(125,50)"><ellipse cx="10" cy="0" rx="5" ry="12" fill="#e0a848"/><ellipse cx="18" cy="-8" rx="5" ry="12" fill="#e0a848"/><ellipse cx="8" cy="-14" rx="5" ry="12" fill="#e0a848"/><circle cx="12" cy="-18" r="6" fill="#ffd9b0"/><circle cx="10" cy="-20" r="1.6" fill="#333"/></g>
+  </g>
+  <g class="cl-bird"><path d="M300 110 q7 -8 14 0 q7 -8 14 0" fill="none" stroke="#5a3d2b" stroke-width="3" stroke-linecap="round"/><path d="M321 116 l4 6 -4 -1 -4 1 z" fill="#fff"/></g>`;
+}
+function sceneBabel(){
+  return `
+  <defs><linearGradient id="g-night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b2350"/><stop offset="1" stop-color="#3d2b63"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-night)"/>
+  <circle cx="330" cy="52" r="24" fill="#ffe9a8"/><circle cx="338" cy="46" r="20" fill="#1b2350"/>
+  ${sparkles([[50,40],[120,70],[200,30],[270,90],[60,120],[370,110]])}
+  <g>
+    <path d="M150 250 L170 160 L230 160 L250 250 Z" fill="#d9a441"/><path d="M158 250 L172 190 L228 190 L242 250 Z" fill="#b97f2c"/>
+    <path d="M168 250 L180 110 L220 110 L232 250 Z" fill="#d9a441"/><path d="M176 250 L184 140 L216 140 L224 250 Z" fill="#b97f2c"/>
+    <path d="M178 110 L188 52 L212 52 L222 110 Z" fill="#e6b554"/><path d="M186 110 L192 70 L208 70 L214 110 Z" fill="#c68a35"/>
+    <path d="M188 44 h24 l-6 -12 h-12 z" fill="#8a5a28"/>
+  </g>
+  <g fill="#5d4037">
+    <circle cx="120" cy="236" r="5"/><circle cx="136" cy="240" r="5"/><circle cx="260" cy="236" r="5"/><circle cx="278" cy="240" r="5"/>
+  </g>
+  <g transform="translate(84,180)"><rect x="-30" y="-20" width="60" height="40" rx="12" fill="#fff" opacity=".95"/><text x="0" y="2" font-size="22" text-anchor="middle" fill="#7c3aed" font-weight="bold">?</text></g>
+  <g transform="translate(300,150)"><rect x="-30" y="-20" width="60" height="40" rx="12" fill="#fff" opacity=".95"/><text x="0" y="2" font-size="22" text-anchor="middle" fill="#ec4899" font-weight="bold">?</text></g>`;
+}
+function sceneStars(){
+  return `
+  <defs><linearGradient id="g-stars" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141c46"/><stop offset="1" stop-color="#312a5e"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-stars)"/>
+  <path d="M60 60 q10 14 24 16 q-14 4 -20 16 q-6 -12 -20 -16 q14 -2 16 -16" fill="#ffe9a8"/>
+  ${sparkles([[50,110],[95,70],[140,130],[185,90],[230,140],[275,80],[320,120],[360,90],[120,180],[300,180]])}
+  <path d="M0 210 q100 -26 200 -10 t200 8 v52 h-400 z" fill="#2e2a52"/>
+  <g transform="translate(120,150)"><path d="M0 -58 L54 34 L-54 34 Z" fill="#a4713d"/><rect x="-52" y="30" width="104" height="14" rx="3" fill="#8a5a28"/><path d="M-16 34 v38 h32 v-38 z" fill="#3d2b1f"/><ellipse cx="0" cy="-20" rx="26" ry="12" fill="#ffd54f" opacity=".35"/></g>
+  <g transform="translate(300,150)"><circle cx="0" cy="0" r="11" fill="#ffe0b2"/><circle cx="12" cy="5" r="11" fill="#ffe0b2"/><path d="M4 8 q8 16 14 8 l-1 26 h-12 z" fill="#b97f2c"/><path d="M8 -22 q0 -14 12 -18 q2 14 -6 18 z" fill="#5d4037"/></g>
+  <g transform="translate(300,150)"><ellipse cx="18" cy="-30" rx="3" ry="14" fill="#8d6e63"/><circle cx="18" cy="-44" r="5" fill="#ffe0b2"/></g>`;
+}
+function sceneSacrifice(){
+  return `
+  <defs><linearGradient id="g-sac" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd9a0"/><stop offset="1" stop-color="#fff3df"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-sac)"/>
+  <g class="cl-sun"><circle cx="330" cy="60" r="30" fill="#ffb300"/><g stroke="#ffb300" stroke-width="3" opacity=".8"><line x1="330" y1="18" x2="330" y2="6"/><line x1="330" y1="102" x2="330" y2="114"/><line x1="288" y1="60" x2="276" y2="60"/><line x1="384" y1="60" x2="396" y2="60"/></g></g>
+  <path d="M0 220 q100 -60 200 -30 q100 30 200 -10 v80 h-400 z" fill="#cbb287"/>
+  <path d="M40 250 L150 60 L270 250 Z" fill="#8d8a85"/><path d="M110 250 L150 120 L196 250 Z" fill="#9b9893"/>
+  <g transform="translate(150,170)"><rect x="-26" y="0" width="52" height="26" rx="4" fill="#8a5a28"/><rect x="-18" y="-14" width="36" height="18" rx="3" fill="#a4713d"/>
+    <path class="cl-flame" d="M-6 -30 q-8 -14 2 -20 q4 10 10 12 q8 8 -2 18 q-4 -4 -10 -10" fill="#f97316"/><path class="cl-flame" d="M2 -26 q-4 -10 4 -14 q2 8 6 9 q4 6 -2 10 q-4 -2 -8 -5" fill="#fbbf24"/></g>
+  <g transform="translate(96,196)"><path d="M-4 0 q-10 -18 4 -30 q10 14 4 30 z" fill="#e8e0d0"/><circle cx="2" cy="-30" r="6" fill="#fff"/><path d="M0 0 q8 -8 14 -4 l-4 4 z" fill="#8a5a28"/><g fill="#3d2b1f"><circle cx="8" cy="-20" r="1.6"/><circle cx="-6" cy="-20" r="1.6"/></g></g>
+  <g transform="translate(272,204)"><path d="M0 -6 q-6 -14 4 -26 q10 12 4 26 z" fill="#e0a848"/><circle cx="6" cy="-30" r="5" fill="#ffd9b0"/><rect x="-2" y="4" width="20" height="8" rx="3" fill="#a4713d" transform="rotate(24)"/></g>
+  <path d="M150 70 q14 -8 26 2" fill="none" stroke="#cbb287" stroke-width="14" stroke-linecap="round"/><path d="M176 66 q10 -4 16 4 l-10 12 q-10 -4 -14 -10 z" fill="#fff"/>
+  ${sparkles([[60,110],[300,120],[200,70]])}`;
+}
+function sceneWell(){
+  return `
+  <defs><linearGradient id="g-well" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#aee1f7"/><stop offset="1" stop-color="#fdf6df"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-well)"/>
+  <circle cx="60" cy="50" r="26" fill="#ffd54f"/>
+  ${birds()}
+  <path d="M0 214 q100 -24 200 -8 t200 10 v44 h-400 z" fill="#e3cfa0"/>
+  <g transform="translate(70,120)"><rect x="-4" y="10" width="8" height="70" fill="#8d6e63"/><path d="M-22 12 q22 -34 44 0 q-10 6 -22 6 q-12 0 -22 -6" fill="#5aa653"/><path d="M-22 12 l-26 16 14 8 22 -18 z" fill="#4caf50"/></g>
+  <g transform="translate(180,158)"><rect x="-30" y="0" width="60" height="26" rx="6" fill="#9b9893"/><rect x="-20" y="-12" width="40" height="14" rx="4" fill="#b0aca6"/>
+    <rect x="-34" y="-34" width="6" height="24" fill="#8a5a28"/><rect x="28" y="-34" width="6" height="24" fill="#8a5a28"/><rect x="-34" y="-44" width="68" height="12" rx="3" fill="#a4713d"/><rect x="-2" y="-42" width="6" height="42" fill="#8a5a28"/><circle cx="1" cy="-46" r="4" fill="#8a5a28"/></g>
+  <g transform="translate(300,160)"><circle cx="0" cy="0" r="12" fill="#ffe0b2"/><circle cx="13" cy="5" r="12" fill="#ffe0b2"/><circle cx="6" cy="-13" r="12" fill="#ffe0b2"/><path d="M5 8 q6 16 13 8 l-2 26 h-11 z" fill="#7c3aed"/><path d="M-10 -10 q-12 2 -10 12 l12 -4 z" fill="#c78b3f"/></g>
+  <g class="cl-camel" transform="translate(90,176)"><ellipse cx="0" cy="0" rx="22" ry="12" fill="#c9a26b"/><circle cx="-14" cy="-12" r="8" fill="#c9a26b"/><circle cx="6" cy="-14" r="8" fill="#c9a26b"/><rect x="-28" y="-6" width="8" height="16" rx="3" fill="#c9a26b"/><rect x="-30" y="-14" width="10" height="10" rx="4" fill="#c9a26b"/><rect x="16" y="-4" width="8" height="14" rx="3" fill="#c9a26b"/><rect x="20" y="-12" width="10" height="10" rx="4" fill="#c9a26b"/><circle cx="-26" cy="4" r="2.4" fill="#333"/><path d="M-30 -2 q-8 -2 -8 -8 q7 0 8 6" fill="none" stroke="#c9a26b" stroke-width="3" stroke-linecap="round"/><path d="M14 -4 l14 2 4 4 -12 3 z" fill="#8a5a28"/></g>
+  ${sparkles([[330,120],[250,90]])}`;
+}
+function sceneLadder(){
+  return `
+  <defs><linearGradient id="g-lad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141c46"/><stop offset="1" stop-color="#3d2b63"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-lad)"/>
+  <path d="M300 52 q8 12 20 14 q-12 4 -16 14 q-5 -10 -16 -14 q12 -2 12 -14" fill="#ffe9a8"/>
+  ${sparkles([[50,70],[100,40],[180,90],[230,50],[280,100],[360,70],[130,150],[330,150]])}
+  <path d="M0 224 q100 -22 200 -8 t200 8 v36 h-400 z" fill="#2e2a52"/>
+  <g class="cl-ladder"><rect x="150" y="40" width="7" height="170" fill="#ffd54f"/><rect x="243" y="40" width="7" height="170" fill="#ffd54f"/>
+    <g stroke="#ffd54f" stroke-width="5"><line x1="150" y1="60" x2="250" y2="60"/><line x1="150" y1="90" x2="250" y2="90"/><line x1="150" y1="120" x2="250" y2="120"/><line x1="150" y1="150" x2="250" y2="150"/><line x1="150" y1="180" x2="250" y2="180"/><line x1="150" y1="210" x2="250" y2="210"/></g></g>
+  <g fill="#fff"><circle cx="180" cy="75" r="7"/><path d="M180 80 l0 8 -6 2 8 2 8 -2 -6 -2 z" fill="#f0e6ff"/><circle cx="220" cy="135" r="7"/><path d="M220 140 l0 8 -6 2 8 2 8 -2 -6 -2 z" fill="#f0e6ff"/><circle cx="170" cy="168" r="7"/><path d="M170 173 l0 8 -6 2 8 2 8 -2 -6 -2 z" fill="#f0e6ff"/></g>
+  <g transform="translate(90,190)"><ellipse cx="0" cy="0" rx="26" ry="13" fill="#6d5a8f"/><circle cx="-14" cy="-8" r="9" fill="#a08ac0"/><path d="M-18 -14 l-6 -10 8 4 8 -6 0 10 z" fill="#3d2b1f"/><circle cx="-20" cy="-16" r="1.6" fill="#fff"/><rect x="-24" y="10" width="16" height="6" rx="3" fill="#8f7bb3"/></g>`;
+}
+function sceneCoat(){
+  return `
+  <defs><linearGradient id="g-coat" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98f"/><stop offset="1" stop-color="#ffeebb"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-coat)"/>
+  <g class="cl-sun"><circle cx="330" cy="58" r="30" fill="#ff9800"/><g stroke="#ff9800" stroke-width="3" opacity=".8"><line x1="330" y1="16" x2="330" y2="4"/><line x1="330" y1="100" x2="330" y2="112"/><line x1="288" y1="58" x2="276" y2="58"/><line x1="384" y1="58" x2="396" y2="58"/></g></g>
+  <path d="M0 214 q80 -26 160 -12 t160 -8 q40 4 80 8 v58 h-400 z" fill="#ecc98f"/>
+  <path d="M0 232 q70 -20 150 -6 t150 -4 q60 4 100 10 v28 h-400 z" fill="#dfb87e"/>
+  <g transform="translate(120,150)">
+    <circle cx="0" cy="0" r="11" fill="#ffe0b2"/><circle cx="-4" cy="-3" r="1.7" fill="#333"/><circle cx="4" cy="-3" r="1.7" fill="#333"/><path d="M-4 3 q4 5 8 0" fill="none" stroke="#b97f2c" stroke-width="2" stroke-linecap="round"/>
+    <path d="M-8 10 q-10 34 -4 60 l14 -2 q0 -30 4 -58 z" fill="#ec4899"/>
+    <path d="M8 10 q10 34 4 60 l-14 -2 q0 -30 -4 -58 z" fill="#8b5cf6"/>
+    <g stroke="#ffc94d" stroke-width="3"><line x1="-8" y1="20" x2="8" y2="20"/><line x1="-8" y1="32" x2="8" y2="32"/><line x1="-8" y1="44" x2="8" y2="44"/></g>
+    <rect x="-14" y="10" width="28" height="4" rx="2" fill="#e0a848"/>
+  </g>
+  <g class="cl-camel" transform="translate(230,168)"><ellipse cx="0" cy="0" rx="24" ry="13" fill="#c9a26b"/><circle cx="-15" cy="-14" r="9" fill="#c9a26b"/><circle cx="6" cy="-16" r="9" fill="#c9a26b"/><rect x="-30" y="-6" width="9" height="18" rx="3" fill="#c9a26b"/><rect x="-33" y="-15" width="11" height="11" rx="4" fill="#c9a26b"/><rect x="17" y="-4" width="9" height="16" rx="3" fill="#c9a26b"/><rect x="21" y="-13" width="11" height="11" rx="4" fill="#c9a26b"/><circle cx="-27" cy="5" r="2.6" fill="#333"/><path d="M-32 0 q-9 -2 -9 -9 q8 0 9 7" fill="none" stroke="#c9a26b" stroke-width="3" stroke-linecap="round"/><path d="M15 -4 l15 3 4 4 -13 3 z" fill="#8a5a28"/></g>
+  <g class="cl-camel" style="animation-delay:.8s" transform="translate(296,182) scale(.85)"><ellipse cx="0" cy="0" rx="22" ry="12" fill="#b8925f"/><circle cx="-13" cy="-13" r="8" fill="#b8925f"/><circle cx="6" cy="-15" r="8" fill="#b8925f"/><rect x="-27" y="-6" width="8" height="16" rx="3" fill="#b8925f"/><rect x="-29" y="-14" width="10" height="10" rx="4" fill="#b8925f"/><rect x="15" y="-4" width="8" height="14" rx="3" fill="#b8925f"/><rect x="19" y="-12" width="10" height="10" rx="4" fill="#b8925f"/><circle cx="-24" cy="4" r="2.4" fill="#333"/></g>
+  ${sparkles([[70,110],[200,90]])}`;
+}
+function scenePharaoh(){
+  return `
+  <defs><linearGradient id="g-ph" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98f"/><stop offset="1" stop-color="#fff3df"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-ph)"/>
+  <g class="cl-sun"><circle cx="330" cy="56" r="30" fill="#ff9800"/><g stroke="#ff9800" stroke-width="3" opacity=".8"><line x1="330" y1="14" x2="330" y2="2"/><line x1="330" y1="98" x2="330" y2="110"/><line x1="288" y1="56" x2="276" y2="56"/><line x1="384" y1="56" x2="396" y2="56"/></g></g>
+  <path d="M0 230 L80 150 L160 230 Z" fill="#d9b98a"/><path d="M280 230 L340 160 L400 230 Z" fill="#d9b98a"/><path d="M0 236 q100 -14 200 -6 t200 8 v22 h-400 z" fill="#ecc98f"/>
+  <g class="cl-throne" transform="translate(200,132)">
+    <rect x="-42" y="0" width="84" height="66" rx="6" fill="#f5c542"/><rect x="-30" y="-34" width="60" height="38" rx="6" fill="#f5c542"/>
+    <rect x="-34" y="-28" width="68" height="8" rx="4" fill="#e0a828"/><rect x="-34" y="-14" width="68" height="8" rx="4" fill="#e0a828"/>
+    <rect x="-34" y="20" width="68" height="8" rx="4" fill="#e0a828"/><rect x="-40" y="66" width="10" height="24" fill="#e0a828"/><rect x="30" y="66" width="10" height="24" fill="#e0a828"/>
+    <circle cx="0" cy="-42" r="10" fill="#ff6b35"/><circle cx="0" cy="-48" r="14" fill="#ffb300" opacity=".6"/>
+  </g>
+  <g transform="translate(200,96)"><circle cx="0" cy="0" r="10" fill="#ffd9b0"/><rect x="-4" y="-16" width="8" height="14" rx="3" fill="#ffd9b0"/><rect x="-16" y="-20" width="32" height="6" rx="3" fill="#ff6b35"/><circle cx="0" cy="-22" r="5" fill="#ffd54f"/><path d="M-6 10 l-14 30 h28 l-14 -30" fill="#f5c542"/><rect x="-1" y="40" width="2" height="14" fill="#f5c542"/></g>
+  <g transform="translate(80,178)"><path d="M0 0 q6 -16 14 -4 l8 2 -4 8 -18 -6 z" fill="#d4a017"/><rect x="2" y="6" width="6" height="26" fill="#d4a017"/><path d="M-2 6 l10 -2 4 26 h-14 z" fill="#e0b84a"/></g>
+  <g transform="translate(110,190)"><path d="M0 0 q6 -16 14 -4 l8 2 -4 8 -18 -6 z" fill="#c9a26b"/><rect x="2" y="6" width="6" height="24" fill="#c9a26b"/><path d="M-2 6 l10 -2 4 24 h-14 z" fill="#d9b98a"/></g>
+  <g transform="translate(308,190)"><ellipse cx="0" cy="0" rx="18" ry="11" fill="#8d6e63"/><circle cx="-12" cy="-9" r="7" fill="#8d6e63"/><circle cx="6" cy="-10" r="7" fill="#8d6e63"/><rect x="-22" y="-4" width="7" height="14" rx="3" fill="#8d6e63"/><rect x="15" y="-3" width="7" height="13" rx="3" fill="#8d6e63"/><path d="M-20 0 l-10 -8" stroke="#8d6e63" stroke-width="4" stroke-linecap="round"/></g>
+  <g transform="translate(340,196)"><ellipse cx="0" cy="0" rx="16" ry="10" fill="#7a5c44"/><circle cx="-10" cy="-8" r="6" fill="#7a5c44"/><circle cx="5" cy="-9" r="6" fill="#7a5c44"/><rect x="-19" y="-3" width="6" height="13" rx="3" fill="#7a5c44"/><rect x="13" y="-3" width="6" height="12" rx="3" fill="#7a5c44"/><path d="M-17 0 l-9 -7" stroke="#7a5c44" stroke-width="4" stroke-linecap="round"/></g>
+  ${sparkles([[50,110],[150,90],[250,110]])}`;
+}
+
+
+function sceneBush(){
+  return `
+  <defs><linearGradient id="g-bush" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#232a56"/><stop offset="1" stop-color="#4a3a6e"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-bush)"/>
+  <path d="M60 52 q8 12 20 14 q-12 4 -16 14 q-5 -10 -16 -14 q12 -2 12 -14" fill="#ffe9a8"/>
+  ${sparkles([[120,60],[200,40],[330,80],[260,120],[80,130]])}
+  <path d="M0 216 q100 -30 200 -12 t200 10 v46 h-400 z" fill="#3a2f56"/>
+  <path d="M250 250 L250 120 L410 250 Z" fill="#3f3d5e"/><path d="M260 250 L268 150 L400 250 Z" fill="#4a4868"/>
+  <g transform="translate(300,150)">
+    <path d="M0 0 q-10 -26 6 -44 q14 18 6 44 z" fill="#5b8c3a"/>
+    <path class="cl-flame" d="M-8 -10 q-10 -22 2 -34 q6 14 12 18 q10 12 -4 26 q-4 -6 -10 -10" fill="#f97316" style="animation-delay:.2s"/>
+    <path class="cl-flame" d="M6 -6 q-6 -16 2 -26 q4 10 8 12 q6 8 -2 18 q-4 -4 -8 -4" fill="#fbbf24"/>
+    <path class="cl-flame" d="M0 -14 q-6 -14 0 -24 q4 10 8 12 q4 6 -4 14 q-4 -2 -4 -2" fill="#fde047"/>
+  </g>
+  <g transform="translate(180,168)"><circle cx="0" cy="0" r="11" fill="#ffe0b2"/><circle cx="-4" cy="-3" r="1.7" fill="#333"/><circle cx="4" cy="-3" r="1.7" fill="#333"/><path d="M-4 3 q4 5 8 0" fill="none" stroke="#b97f2c" stroke-width="2" stroke-linecap="round"/><path d="M-8 10 q-8 22 -2 44 l12 -2 q-2 -22 2 -42 z" fill="#8a5a28"/><rect x="-2" y="52" width="14" height="4" rx="2" fill="#5b3a1e"/><path d="M-10 54 l-20 14 6 5 16 -13 z" fill="#7c4a24"/></g>
+  <g fill="#ffe9a8" opacity=".8"><circle cx="120" cy="60" r="3"/><circle cx="200" cy="44" r="2"/><circle cx="330" cy="84" r="2.5"/><circle cx="260" cy="120" r="2"/><circle cx="80" cy="130" r="2"/></g>`;
+}
+function scenePlague(){
+  return `
+  <defs><linearGradient id="g-pl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3b2a3a"/><stop offset="1" stop-color="#6b3b4a"/></linearGradient>
+  <linearGradient id="g-plw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a02424"/><stop offset="1" stop-color="#6e1616"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-pl)"/>
+  <circle cx="330" cy="52" r="22" fill="#e8d5b0" opacity=".5"/>
+  <g stroke="#5d3a4a" stroke-width="3" opacity=".6"><line x1="60" y1="40" x2="80" y2="28"/><line x1="90" y1="36" x2="110" y2="24"/><line x1="120" y1="40" x2="140" y2="28"/><line x1="150" y1="34" x2="170" y2="22"/><line x1="180" y1="42" x2="200" y2="30"/></g>
+  <g fill="#7f1d1d" opacity=".85">
+    <circle cx="70" cy="60" r="6"/><circle cx="100" cy="54" r="6"/><circle cx="130" cy="62" r="6"/><circle cx="160" cy="50" r="6"/><circle cx="190" cy="58" r="6"/>
+    <circle cx="220" cy="54" r="6"/><circle cx="250" cy="62" r="6"/><circle cx="280" cy="50" r="6"/><circle cx="310" cy="58" r="6"/>
+  </g>
+  <g fill="#5c9a3a"><circle cx="80" cy="90" r="5"/><circle cx="140" cy="84" r="5"/><circle cx="200" cy="94" r="5"/><circle cx="260" cy="86" r="5"/><circle cx="320" cy="92" r="5"/></g>
+  <rect y="196" width="400" height="64" fill="url(#g-plw)"/>
+  <path d="M0 196 q40 -10 80 0 t80 0 t80 0 t80 0 t80 0" fill="#8a1c1c" opacity=".8"/>
+  ${waves(206,"#c23b3b",5)}
+  <g class="cl-hail"><circle cx="50" cy="130" r="5" fill="#dbe7ff"/><circle cx="120" cy="150" r="6" fill="#dbe7ff"/><circle cx="200" cy="128" r="5" fill="#dbe7ff"/><circle cx="290" cy="146" r="6" fill="#dbe7ff"/><circle cx="350" cy="136" r="5" fill="#dbe7ff"/></g>
+  <g transform="translate(180,60)" fill="#fff" opacity=".9"><rect x="-30" y="-16" width="60" height="34" rx="10"/><text x="0" y="6" font-size="18" text-anchor="middle" fill="#8b1a1a" font-weight="bold">十灾</text></g>
+  <style>.cl-hail circle{animation:sparkle 1.6s ease-in-out infinite}</style>`;
+}
+function sceneRedsea(){
+  return `
+  <defs><linearGradient id="g-rs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd98f"/><stop offset="1" stop-color="#ffeebb"/></linearGradient>
+  <linearGradient id="g-wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5ec8f7"/><stop offset="1" stop-color="#2f89d8"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-rs)"/>
+  <g class="cl-sun"><circle cx="330" cy="52" r="28" fill="#ff9800"/><g stroke="#ff9800" stroke-width="3" opacity=".8"><line x1="330" y1="12" x2="330" y2="0"/><line x1="330" y1="92" x2="330" y2="104"/><line x1="290" y1="52" x2="278" y2="52"/><line x1="382" y1="52" x2="394" y2="52"/></g></g>
+  <path d="M0 150 Q40 120 90 150 T200 150 T320 150 T400 150 L400 260 L0 260 Z" fill="#e0c07a"/>
+  <path d="M150 40 h100 v120 h-100 z" fill="url(#g-wall)" opacity=".95"/>
+  <path d="M150 40 q-10 60 0 120" fill="none" stroke="#bdeaff" stroke-width="4"/><path d="M250 40 q10 60 0 120" fill="none" stroke="#bdeaff" stroke-width="4"/>
+  <g fill="#7ecdf5" opacity=".9"><circle cx="138" cy="70" r="4"/><circle cx="130" cy="100" r="4"/><circle cx="262" cy="66" r="4"/><circle cx="270" cy="104" r="4"/></g>
+  <g transform="translate(170,150)"><circle cx="0" cy="0" r="11" fill="#ffe0b2"/><path d="M-6 10 q-6 26 0 46 l12 -2 q-2 -24 4 -44 z" fill="#7c3aed"/><circle cx="0" cy="-16" r="5" fill="#fff" opacity=".8"/></g>
+  <g transform="translate(210,152)"><circle cx="0" cy="0" r="10" fill="#ffd9b0"/><path d="M-5 9 q-5 22 0 40 l10 -2 q-2 -20 4 -38 z" fill="#e0a848"/><circle cx="0" cy="-14" r="4" fill="#fff" opacity=".8"/></g>
+  <g transform="translate(90,120)"><circle cx="0" cy="0" r="9" fill="#ffd9b0"/><rect x="-6" y="6" width="12" height="30" rx="3" fill="#8a5a28"/><rect x="-12" y="-4" width="24" height="6" rx="3" fill="#8a5a28"/></g>
+  <g transform="translate(320,118)" opacity=".9"><circle cx="0" cy="0" r="9" fill="#c9a26b"/><rect x="-6" y="4" width="12" height="24" rx="3" fill="#c9a26b"/><circle cx="10" cy="14" r="8" fill="#c9a26b"/><circle cx="10" cy="14" r="4" fill="#fff" opacity=".6"/><path d="M-8 -6 l-14 -10" stroke="#8a5a28" stroke-width="3" stroke-linecap="round"/></g>
+  ${waves(238,"#3b82f6",5)}
+  <style>.cl-wall{animation:waveMove 3s linear infinite}</style>`;
+}
+function sceneSinai(){
+  return `
+  <defs><linearGradient id="g-si" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2f6e"/><stop offset="1" stop-color="#5a4a7a"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#g-si)"/>
+  <circle cx="60" cy="52" r="22" fill="#ffe9a8"/>
+  ${sparkles([[120,60],[180,90],[240,50],[310,100],[90,120]])}
+  <g stroke="#ffd54f" stroke-width="2.5" opacity=".8"><line x1="150" y1="30" x2="170" y2="48"/><line x1="180" y1="26" x2="200" y2="44"/><line x1="210" y1="32" x2="230" y2="50"/><line x1="240" y1="28" x2="260" y2="46"/></g>
+  <path d="M0 240 L130 70 L260 240 Z" fill="#6b5b8e"/><path d="M60 240 L130 100 L210 240 Z" fill="#7d6ca0"/>
+  <path d="M120 240 L130 70 L250 240 Z" fill="#5c4d80"/>
+  <g class="cl-flame" transform="translate(130,84)"><path d="M0 0 q-12 -26 0 -44 q12 18 0 44 z" fill="#f97316"/><path d="M0 0 q-7 -18 0 -32 q7 14 0 32 z" fill="#fbbf24"/></g>
+  <g transform="translate(200,120)"><rect x="-24" y="0" width="20" height="44" rx="4" fill="#e8e0d0"/><rect x="4" y="0" width="20" height="44" rx="4" fill="#e8e0d0"/><rect x="-20" y="4" width="12" height="4" rx="2" fill="#d8cfc0"/><rect x="-20" y="14" width="12" height="4" rx="2" fill="#d8cfc0"/><rect x="8" y="4" width="12" height="4" rx="2" fill="#d8cfc0"/><rect x="8" y="14" width="12" height="4" rx="2" fill="#d8cfc0"/><path d="M-14 2 l4 -8 6 2 -4 6 z" fill="#b8ad9a" transform="rotate(-14 -12 0)"/><path d="M14 2 l-4 -8 -6 2 4 6 z" fill="#b8ad9a" transform="rotate(14 12 0)"/></g>
+  <g transform="translate(70,190)"><circle cx="0" cy="0" r="7" fill="#ffd9b0"/><path d="M-4 6 q-4 16 0 26 l8 -2 q-1 -14 3 -24 z" fill="#a4713d"/></g>
+  <g transform="translate(300,196)"><circle cx="0" cy="0" r="7" fill="#ffd9b0"/><path d="M-4 6 q-4 16 0 26 l8 -2 q-1 -14 3 -24 z" fill="#a4713d"/></g>
+  <g fill="#fff" opacity=".85"><rect x="130" y="232" width="56" height="10" rx="5"/><rect x="220" y="232" width="56" height="10" rx="5"/></g>`;
+}
+
+/* ---------- 启动 ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  saveSet();
+  document.getElementById("btn-sound").textContent = settings.sfx ? "🔊" : "🔇";
+  document.getElementById("btn-sound").classList.toggle("off", !settings.sfx);
+  renderHome();
+  show("home");
+});
+window.addEventListener("resize", () => { const cv = document.getElementById("confetti"); if(cv){ cv.width = innerWidth; cv.height = innerHeight; } });
+</script>
+</body>
+</html>
